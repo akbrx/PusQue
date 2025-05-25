@@ -67,7 +67,7 @@ class MyNavbar extends HTMLElement {
 
       <nav>
         <div class="logo">
-          <slot name="logo">MySite</slot>
+          <slot name="logo"></slot>
         </div>
 
         <div class="hamburger" id="hamburger">
@@ -77,14 +77,14 @@ class MyNavbar extends HTMLElement {
         </div>
 
         <ul class="menu" id="menu">
-          <li><a href="#"><slot name="link1">Home</slot></a></li>
-          <li><a href="#"><slot name="link2">About</slot></a></li>
-          <li><a href="#"><slot name="link3">Contact</slot></a></li>
+          <li><a href="#"><slot name="link1"></slot></a></li>
+          <li><a href="#"><slot name="link2"></slot></a></li>
+          <li><a href="#"><slot name="link3"></slot></a></li>
         </ul>
       </nav>
     `;
 
-    // Toggle hamburger menu
+    // Hamburger
     this.shadowRoot.addEventListener("click", (e) => {
       if (e.target.closest("#hamburger")) {
         const menu = this.shadowRoot.getElementById("menu");
