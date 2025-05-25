@@ -2,9 +2,11 @@
 
 import express from 'express';
 import db from './config/database.js';
-//import Users from './models/user-model.js';
 import router from './routes/index.js';
+import dotenv from 'dotenv';
+//import Users from './user/user-model.js';
 
+dotenv.config();
 const app = express();
 
 try {
