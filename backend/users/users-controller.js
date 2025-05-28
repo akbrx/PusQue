@@ -2,6 +2,7 @@ import Users from './user-model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+
 export const getUsers = async (req, res) => {
     try {
         const users = await Users.findAll();
@@ -46,18 +47,24 @@ export const Login = async (req, res) => {
                 email: req.body.email
             }
         });
-        const match = await bcrypt.compare(req.body.password, user[0].password);
+        // Cek jika user tidak ditemukan
+        if (!user) {
+            return res.status(404).json({ message: 'Email tidak ditemukan' });
+        }
+        // Cek password
+        const match = await bcrypt.compare(req.body.password, user.password);
         if (!match) return res.status(400).json({ message: 'password salah' });
-        const userId = user[0].id;
-        const name = user[0].name;
-        const email = user[0].email;
+        const userId = user.id;
+        const name = user.name;
+        const email = user.email;
         const accsessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: '20s'
         });
         const refreshToken = jwt.sign({ userId, name, email }, process.env.REFRESH_TOKEN_SECRET, {
             expiresIn: '1d'
         });
-        await Users.update({ refresh_token: refreshToken }, {
+        // Update field refreshToken
+        await Users.update({ refreshToken: refreshToken }, {
             where: {
                 id: userId
             }
@@ -69,7 +76,6 @@ export const Login = async (req, res) => {
         res.json({ accsessToken });
     } catch (error) {
         console.error(error);
-        res.status(404).json({ message: 'Email tidak ditemukan' });
-        
+        res.status(500).json({ message: 'Internal server error' });
     }
 }
