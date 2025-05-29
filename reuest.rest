@@ -1,7 +1,9 @@
 GET http://localhost:5000/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsIm5hbWUiOiJha2JyIiwiZW1haWwiOiJha2JyQGdtYWlsLmNvbSIsImlhdCI6MTc0ODUyMTMwNSwiZXhwIjoxNzQ4NTIxMzI1fQ.HRlvXPk2FmBBMEFYiYVVGdblC9NfjhvPubLO3XD-Rxg
 
-###
 
+
+### Register
 POST http://localhost:5000/users
 Content-Type: application/json
 
@@ -12,8 +14,7 @@ Content-Type: application/json
   "confPassword": "123456"
 }
 
-###
-
+### Login
 POST http://localhost:5000/login
 Content-Type: application/json
 
@@ -23,3 +24,9 @@ Content-Type: application/json
   "password": "123456"
 
 }
+
+###
+GET http://localhost:5000/token
+
+### logout
+DELETE http://localhost:5000/logout
