@@ -1,0 +1,134 @@
+import ktpimg from "../assets/images/ktp.jpg"
+class ProfileView extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .card {
+          background: white;
+          border-radius: 10px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          padding: 2rem;
+          max-width: 900px;
+          width: 100%;
+          display: flex;
+          gap: 1.5rem;
+          margin-top: 40px;
+        }
+        .left {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .left img.profile {
+          width: 120px;
+          height: 120px;
+          border-radius: 10px;
+          background: #e0e0e0;
+        }
+        .edit-btn {
+          margin-top: 1rem;
+          padding: 5px 20px;
+          background: #2979ff;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .right {
+          flex: 1;
+          padding: 30px;
+        }
+        .right .nama {
+          font-weight: bold;
+          font-size: 1.2rem;
+        }
+        .right .label {
+          font-weight: 500;
+        }
+        .info-line {
+          margin: 0.5rem 0;
+          display: flex;
+          justify-content: space-beetwen;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+        .info-line span {
+          display: inline-block;
+          width: 50%;
+          flex-shrink: 0;
+        }
+        .info-line p {
+          display: inline-block;
+          flex-shrink: 0;
+          margin: 0;
+        }
+        hr {
+          border: none;
+          border-top: 1px solid #ddd;
+          margin: 1rem 0;
+        }
+        .ktp-img {
+          width: 50%;
+          border-radius: 6px;
+        }
+         @media (max-width: 500px) {
+          .card {
+            flex-direction: column;
+            box-shadow: none;
+
+          }
+          .info-line {
+            display: flex;
+            justify-content: space-beetwen;
+          }
+          
+          .info-line span.label {
+            width : 40%
+          }
+          .info-line p {
+            min-width: 120px;
+          }
+        }
+        
+      </style>
+      <div class="card">
+        <div class="left">
+          <img class="profile" src="https://img.icons8.com/ios-filled/100/user.png" alt="profile" />
+          <button class="edit-btn">Edit</button>
+        </div>
+        <div class="right">
+          <div class="info-line-nama">
+            <span class="label">Nama :</span> 
+            <h3 class="nama">Akhmad</h3>
+          </div>
+          <hr />
+          <div class="info-line">
+            <span class="label">NIK </span> 
+            <p>: 0909090909090909</p>
+          </div>
+          <div class="info-line">
+            <span class="label">Tanggal Lahir </span> 
+            <p>: 09 Mei 2000</p>
+          </div>
+          <div class="info-line">
+            <span class="label">Domisili</span> 
+            <p>: Jakarta</p>
+          </div>
+          <div class="info-line">
+            <span class="label">KTP</span>
+            <img class="ktp-img" src="${ktpimg}" alt="KTP" />
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+customElements.define('profile-view', ProfileView);

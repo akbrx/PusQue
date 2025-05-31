@@ -10,12 +10,14 @@ class MyNavbar extends HTMLElement {
           font-family: Arial, sans-serif;
         }
         nav {
-          background-color: #333;
+          background-color: #407BFF;
           color: white;
           display: flex;
           justify-content: space-between;
           align-items: center;
           padding: 1rem 2rem;
+          position: sticky;
+          z-index: 99999;
         }
         .logo {
           font-weight: bold;
