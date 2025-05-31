@@ -69,7 +69,7 @@ class MyNavbar extends HTMLElement {
 
       <nav>
         <div class="logo">
-          <slot name="logo"></slot>
+          PusQue
         </div>
 
         <div class="hamburger" id="hamburger">
@@ -79,9 +79,10 @@ class MyNavbar extends HTMLElement {
         </div>
 
         <ul class="menu" id="menu">
-          <li><a href="#"><slot name="link1"></slot></a></li>
-          <li><a href="#"><slot name="link2"></slot></a></li>
-          <li><a href="#"><slot name="link3"></slot></a></li>
+          <li><a href="#/">Home</a></li>
+          <li><a href="#/antrian">Antrian</a></li>
+          <li><a href="#/daftar">Daftar</a></li>
+          <li><a href="#/profile">Profil</a></li>
         </ul>
       </nav>
     `;
