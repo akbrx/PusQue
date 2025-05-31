@@ -14,7 +14,7 @@ class ChatView extends HTMLElement {
           font-family: Arial, sans-serif;
         }
 
-        .container {
+        .container-chatboot {
           display: flex;
           flex-direction: column;
           height: 85vh;
@@ -129,13 +129,13 @@ class ChatView extends HTMLElement {
           .logo-wrapper {
             display: none;
           }
-          .container {
+          .container-chatbot {
             height : 90vh;
           }
         }
       </style>
 
-      <div class="container">
+      <div class="container-chatbot">
         <div class="main-content">
           <div class="logo-wrapper">
             <img class="logo" src="${logoPusQue}" alt="Logo PusQue" />

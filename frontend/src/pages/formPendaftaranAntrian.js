@@ -33,7 +33,7 @@ class DaftarAntrianForm extends HTMLElement {
   render() {
     this.shadowRoot.innerHTML = `
       <style>
-        .container {
+        .container-daftar {
           max-width: 600px;
           margin: 2rem auto;
           padding: 2rem;
@@ -81,7 +81,7 @@ class DaftarAntrianForm extends HTMLElement {
           cursor: pointer;
         }
       </style>
-      <form class="container">
+      <form class="container-daftar">
         <h2>Daftar Antrian</h2>
         <input type="date" name="tanggal" />
 

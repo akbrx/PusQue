@@ -16,7 +16,7 @@ class AntrianPuskesmas extends HTMLElement {
           box-sizing: border-box;
         }
 
-        .container {
+        .container-antri {
           font-family: Arial, sans-serif;
           padding: 1rem;
           max-width: 1024px;
@@ -112,7 +112,7 @@ class AntrianPuskesmas extends HTMLElement {
         }
       </style>
 
-      <div class="container">
+      <div class="container-antri">
         <div class="alert">
           Waktu yang tercantum bersifat estimasi dan dapat berubah sewaktu-waktu, baik lebih awal maupun lebih lambat, tergantung situasi dan kondisi yang terjadi.
         </div>

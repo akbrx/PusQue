@@ -10,7 +10,7 @@ class ProfileView extends HTMLElement {
           justify-content: center;
           align-items: center;
         }
-        .card {
+        .card-profile {
           background: white;
           border-radius: 10px;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -21,12 +21,12 @@ class ProfileView extends HTMLElement {
           gap: 1.5rem;
           margin-top: 40px;
         }
-        .left {
+        .left-profile {
           display: flex;
           flex-direction: column;
           align-items: center;
         }
-        .left img.profile {
+        .left-profile img.profile {
           width: 120px;
           height: 120px;
           border-radius: 10px;
@@ -41,15 +41,15 @@ class ProfileView extends HTMLElement {
           border-radius: 4px;
           cursor: pointer;
         }
-        .right {
+        .right-profile {
           flex: 1;
           padding: 30px;
         }
-        .right .nama {
+        .right-profile .nama {
           font-weight: bold;
           font-size: 1.2rem;
         }
-        .right .label {
+        .right-profile .label {
           font-weight: 500;
         }
         .info-line {
@@ -79,7 +79,7 @@ class ProfileView extends HTMLElement {
           border-radius: 6px;
         }
          @media (max-width: 500px) {
-          .card {
+          .card-profile {
             flex-direction: column;
             box-shadow: none;
 
@@ -98,12 +98,12 @@ class ProfileView extends HTMLElement {
         }
         
       </style>
-      <div class="card">
-        <div class="left">
+      <div class="card-profile">
+        <div class="left-profile">
           <img class="profile" src="https://img.icons8.com/ios-filled/100/user.png" alt="profile" />
           <button class="edit-btn">Edit</button>
         </div>
-        <div class="right">
+        <div class="right-profile">
           <div class="info-line-nama">
             <span class="label">Nama :</span> 
             <h3 class="nama">Akhmad</h3>

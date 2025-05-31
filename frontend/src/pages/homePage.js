@@ -12,7 +12,7 @@ class PusquePage extends HTMLElement {
           padding: 0;
         }
         
-        .container {
+        .container-home {
           padding: 30px;
           margin-inline: 0;  
         }
@@ -86,7 +86,7 @@ class PusquePage extends HTMLElement {
         }
 
         @media (min-width: 640px) {
-          .container {
+          .container-home {
             padding: 30px;
             margin-inline: 80px;  
           }
@@ -193,7 +193,7 @@ class PusquePage extends HTMLElement {
         }
       </style>
 
-      <div class="container">
+      <div class="container-home">
         <section class="hero">
           <div class="hero-content">
             <div class="hero-text">
