@@ -71,24 +71,19 @@ function router() {
   const app = document.getElementById('app');
   const hash = window.location.hash;
 
-  app.innerHTML = ''; // Bersihkan konten utama terlebih dahulu
+  app.innerHTML = '';
 
-  // Jika belum login, selalu tampilkan form login
-  if (!isLoggedIn() && hash !== "#/login") {
-    window.location.hash = "#/login";
-    return;
-  }
-
-  // Render halaman login
-  if (hash === "#/login") {
+  // Jika belum login, hanya boleh akses login & register
+  if (!isLoggedIn()) {
+    if (hash === "#/register") {
+      renderRegisterForm(() => {
+        window.location.hash = "#/login";
+      });
+      return;
+    }
+    // Default: tampilkan login
     renderLoginForm(() => {
       window.location.hash = "#/";
-    });
-    return;
-
-  } else if (hash === "#/register") {
-    renderRegisterForm(() => {
-      window.location.hash = "#/login";
     });
     return;
   }
