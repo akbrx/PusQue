@@ -11,6 +11,7 @@ import './pages/DetailPasienView.js';
 import './pages/AdminPengajuanList.js';
 import './pages/AdminDetailPengajuan.js';
 import './pages/AdminBeranda.js';
+import { renderLoginForm } from './pages/auth/login.js';
 
 const dataPasienDummy = [
   {
@@ -60,12 +61,32 @@ window.PasienPerBulan = [
   { bulan: "Desember", jumlah: 160 }
 ];
 
+function isLoggedIn() {
+  // Cek token di localStorage, sesuaikan dengan nama token yang kamu simpan setelah login
+  return !!localStorage.getItem('accessToken');
+}
+
 function router() {
   const app = document.getElementById('app');
   const hash = window.location.hash;
 
   app.innerHTML = ''; // Bersihkan konten utama terlebih dahulu
 
+  // Jika belum login, selalu tampilkan form login
+  if (!isLoggedIn() && hash !== "#/login") {
+    window.location.hash = "#/login";
+    return;
+  }
+
+  // Render halaman login
+  if (hash === "#/login") {
+    renderLoginForm(() => {
+      window.location.hash = "#/";
+    });
+    return;
+  }
+
+  // Jika sudah login, render halaman sesuai hash
   if (hash === "" || hash === "#/" || hash === "#/home") {
     const home = document.createElement("pusque-page");
     app.appendChild(home);
@@ -123,24 +144,3 @@ function router() {
 
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
-
-  
-
-// Routing mapping
-// const routes = {
-//   "/": "<pusque-page></pusque-page>",
-//   "/antrian": "<antrian-puskesmas></antrian-puskesmas>",
-//   "/daftar": "<daftar-antrian-form></daftar-antrian-form>",
-//   "/profile": "<profile-view></profile-view>",
-//   "/chatbot": "<chat-bot></chat-bot>",
-// };
-
-// // Routing handler
-// function router() {
-//   const path = location.hash.slice(1) || "/";
-//   const app = document.getElementById("app");
-//   app.innerHTML = routes[path] || "<h1>404 - Halaman tidak ditemukan</h1>";
-// }
-
-// window.addEventListener("hashchange", router);
-// window.addEventListener("load", router);
