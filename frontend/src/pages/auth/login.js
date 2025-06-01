@@ -3,22 +3,25 @@ export function renderLoginForm(onLoginSuccess) {
   app.innerHTML = `
     <form id="loginForm" class="p-4 m-auto" style="max-width:400px;">
       <h2 class="mb-3 text-center">Login</h2>
-      <input type="email" id="email" class="form-control mb-2" placeholder="Email" required />
+      <input type="text" id="nik" class="form-control mb-2" placeholder="NIK" required />
       <input type="password" id="password" class="form-control mb-2" placeholder="Password" required />
       <button type="submit" class="btn btn-primary w-100">Login</button>
       <div class="message mt-2 text-center" id="message"></div>
+      <p class="mt-3 text-center">
+        Belum punya akun? <a href="#/register">Register di sini</a>
+      </p>
     </form>
   `;
 
   var form = document.getElementById('loginForm');
-  var emailInput = document.getElementById('email');
+  var nikInput = document.getElementById('nik');
   var passwordInput = document.getElementById('password');
   var messageDiv = document.getElementById('message');
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    var email = emailInput.value.trim();
+    var nik = nikInput.value.trim();
     var password = passwordInput.value.trim();
     messageDiv.textContent = '';
     messageDiv.classList.remove('text-success', 'text-danger');
@@ -29,7 +32,7 @@ export function renderLoginForm(onLoginSuccess) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email: email, password: password })
+      body: JSON.stringify({ nik: nik, password: password })
     })
       .then(function (res) {
         return res.json().then(function (data) {

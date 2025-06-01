@@ -8,10 +8,32 @@ const User = db.define('users', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    email: {
+    nik: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        validate: {
+            len: {
+                args: [16, 16],
+                msg: "NIK harus terdiri dari 16 angka"
+            },
+            isNumeric: {
+                msg: "NIK hanya boleh berisi angka"
+            }
+        }
+    },
+    tanggalLahir: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+    },
+    domisili: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    role: {
+        type: DataTypes.ENUM('pasien', 'admin', 'dokter'),
+        allowNull: false,
+        defaultValue: 'pasien'
     },
     password: {
         type: DataTypes.STRING,

@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 export const getUsers = async (req, res) => {
     try {
         const users = await Users.findAll({
-            attributes: ['id', 'name', 'email'],
+            attributes: ['id', 'name', 'nik', 'tanggalLahir', 'domisili', 'role'],
         });
         res.json(users);
     } catch (error) {
@@ -16,22 +16,32 @@ export const getUsers = async (req, res) => {
 }
 
 export const Register = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, nik, tanggalLahir, domisili, role, password, confPassword } = req.body;
 
-    if (!name || !email || !password) {
+    // Validasi field wajib
+    if (!name || !nik || !tanggalLahir || !domisili || !role || !password || !confPassword) {
         return res.status(400).json({ message: 'All fields are required' });
     }
 
+    // Validasi password dan konfirmasi
+    if (password !== confPassword) {
+        return res.status(400).json({ message: 'Password dan konfirmasi password tidak sama' });
+    }
+
     try {
-        const existingUser = await Users.findOne({ where: { email } });
+        // Cek NIK sudah terdaftar
+        const existingUser = await Users.findOne({ where: { nik } });
         if (existingUser) {
-            return res.status(400).json({ message: 'Email already exists' });
+            return res.status(400).json({ message: 'NIK already exists' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await Users.create({
             name,
-            email,
+            nik,
+            tanggalLahir,
+            domisili,
+            role,
             password: hashedPassword
         });
 
@@ -44,33 +54,40 @@ export const Register = async (req, res) => {
 
 export const Login = async (req, res) => {
     try {
-        const user = await Users.findOne({
-            where: {
-                email: req.body.email
-            }
-        });
-        // Cek jika user tidak ditemukan
-        if (!user) {
-            return res.status(404).json({ message: 'Email tidak ditemukan' });
+        const { nik, password } = req.body;
+        if (!nik || !password) {
+            return res.status(400).json({ message: 'NIK dan password wajib diisi' });
         }
-        // Cek password
-        const match = await bcrypt.compare(req.body.password, user.password);
-        if (!match) return res.status(400).json({ message: 'password salah' });
+
+        const user = await Users.findOne({
+            where: { nik }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'NIK tidak ditemukan' });
+        }
+
+        if (!user.password) {
+            return res.status(400).json({ message: 'Password belum diset untuk user ini' });
+        }
+
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) return res.status(400).json({ message: 'Password salah' });
+
         const userId = user.id;
         const name = user.name;
-        const email = user.email;
-        const accsessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, {
+        const role = user.role;
+        const accsessToken = jwt.sign({ userId, name, nik, role }, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: '20s'
         });
-        const refreshToken = jwt.sign({ userId, name, email }, process.env.REFRESH_TOKEN_SECRET, {
+        const refreshToken = jwt.sign({ userId, name, nik, role }, process.env.REFRESH_TOKEN_SECRET, {
             expiresIn: '1d'
         });
-        // Update field refreshToken
+
         await Users.update({ refreshToken: refreshToken }, {
-            where: {
-                id: userId
-            }
+            where: { id: userId }
         });
+
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000

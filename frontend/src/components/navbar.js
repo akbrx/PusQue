@@ -123,11 +123,28 @@ class MyNavbar extends HTMLElement {
         </div>
 
         <ul class="menu" id="menu">
+          <li><a href="#/">Home</a></li>
+          <li><a href="#/antrian">Antrian</a></li>
+          <li><a href="#/daftar">Daftar</a></li>
+          <li><a href="#/profile">Profil</a></li>
+          <li><a href="#/login" id="logoutBtn">Logout</a></li>
           ${menuItems}
         </ul>
       </nav>
     `;
 
+    // Hamburger
+    this.shadowRoot.addEventListener("click", (e) => {
+      if (e.target.closest("#hamburger")) {
+        const menu = this.shadowRoot.getElementById("menu");
+        menu.classList.toggle("show");
+      }
+      // Logout
+      if (e.target.id === "logoutBtn") {
+        localStorage.removeItem('accessToken');
+        window.location.hash = "#/login";
+      }
+    });
     // Hamburger toggle
     this.shadowRoot.querySelector("#hamburger").addEventListener("click", () => {
       const menu = this.shadowRoot.querySelector("#menu");

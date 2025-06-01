@@ -5,6 +5,14 @@ import "./components/feedBack.js";
 import "./pages/pasien/antrianPage.js";
 import "./pages/pasien/formPendaftaranAntrian.js";
 import "./pages/profile.js";
+import "./pages/chatBot.js";
+import './pages/PasienListView.js';
+import './pages/DetailPasienView.js';
+import './pages/AdminPengajuanList.js';
+import './pages/AdminDetailPengajuan.js';
+import './pages/AdminBeranda.js';
+import { renderLoginForm } from './pages/auth/login.js';
+import { renderRegisterForm } from './pages/auth/register.js';
 import "./pages/pasien/chatBot.js";
 import './pages/dokter/PasienListView.js';
 import './pages/dokter/DetailPasienView.js';
@@ -71,6 +79,30 @@ function isLoggedIn() {
 function router() {
   const app = document.getElementById('app');
   const hash = window.location.hash;
+
+  app.innerHTML = ''; // Bersihkan konten utama terlebih dahulu
+
+  // Jika belum login, selalu tampilkan form login
+  if (!isLoggedIn() && hash !== "#/login") {
+    window.location.hash = "#/login";
+    return;
+  }
+
+  // Render halaman login
+  if (hash === "#/login") {
+    renderLoginForm(() => {
+      window.location.hash = "#/";
+    });
+    return;
+
+  } else if (hash === "#/register") {
+    renderRegisterForm(() => {
+      window.location.hash = "#/login";
+    });
+    return;
+  }
+
+  // Jika sudah login, render halaman sesuai hash
   const role = localStorage.getItem("userRole");
 
   app.innerHTML = '';
@@ -152,8 +184,14 @@ function router() {
     const notFound = document.createElement("not-found-page");
     app.appendChild(notFound);
   }
-
 }
+
+function logout() {
+  localStorage.removeItem('accessToken');
+  window.location.hash = "#/login";
+}
+
+
 
 
 window.addEventListener('hashchange', router);
