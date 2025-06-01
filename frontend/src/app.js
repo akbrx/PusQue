@@ -142,5 +142,10 @@ function router() {
   }
 }
 
+function logout() {
+  localStorage.removeItem('accessToken');
+  window.location.hash = "#/login";
+}
+
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);

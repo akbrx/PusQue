@@ -83,6 +83,7 @@ class MyNavbar extends HTMLElement {
           <li><a href="#/antrian">Antrian</a></li>
           <li><a href="#/daftar">Daftar</a></li>
           <li><a href="#/profile">Profil</a></li>
+          <li><a href="#/login" id="logoutBtn">Logout</a></li>
         </ul>
       </nav>
     `;
@@ -92,6 +93,11 @@ class MyNavbar extends HTMLElement {
       if (e.target.closest("#hamburger")) {
         const menu = this.shadowRoot.getElementById("menu");
         menu.classList.toggle("show");
+      }
+      // Logout
+      if (e.target.id === "logoutBtn") {
+        localStorage.removeItem('accessToken');
+        window.location.hash = "#/login";
       }
     });
   }
