@@ -13,6 +13,7 @@ import './pages/admin/AdminDetailPengajuan.js';
 import './pages/admin/AdminBeranda.js';
 import './pages/loginPage.js';
 import './pages/notFound/notFoundPage.js';
+import './pages/auth/login.js';
 
 const dataPasienDummy = [
   {
@@ -72,7 +73,7 @@ function router() {
   const hash = window.location.hash;
   const role = localStorage.getItem("userRole");
 
-  app.innerHTML = ''; // Kosongkan halaman
+  app.innerHTML = '';
 
   if (hash === "" || hash === "#/" || hash === "#/home") {
     const home = document.createElement("pusque-page");
