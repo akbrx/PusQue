@@ -34,7 +34,15 @@ const User = db.define('users', {
         type: DataTypes.ENUM('pasien', 'admin', 'dokter'),
         allowNull: false,
         defaultValue: 'pasien'
-    }
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    refreshToken: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
 }, {
     freezeTableName: true,
 });
