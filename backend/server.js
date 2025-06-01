@@ -6,7 +6,7 @@ import router from './routes/index.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-//import Users from './user/user-model.js';
+//import Users from './users/user-model.js';
 
 dotenv.config();
 const app = express();
@@ -22,7 +22,7 @@ try {
 
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:8080', 'http://localhost:3000'],
   credentials: true,
 }));
 app.use(cookieParser());
