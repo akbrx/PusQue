@@ -12,6 +12,7 @@ import './pages/AdminPengajuanList.js';
 import './pages/AdminDetailPengajuan.js';
 import './pages/AdminBeranda.js';
 import { renderLoginForm } from './pages/auth/login.js';
+import { renderRegisterForm } from './pages/auth/register.js';
 
 const dataPasienDummy = [
   {
@@ -82,6 +83,12 @@ function router() {
   if (hash === "#/login") {
     renderLoginForm(() => {
       window.location.hash = "#/";
+    });
+    return;
+
+  } else if (hash === "#/register") {
+    renderRegisterForm(() => {
+      window.location.hash = "#/login";
     });
     return;
   }

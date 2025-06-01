@@ -12,6 +12,15 @@ const User = db.define('users', {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        validate: {
+            len: {
+                args: [16, 16],
+                msg: "NIK harus terdiri dari 16 angka"
+            },
+            isNumeric: {
+                msg: "NIK hanya boleh berisi angka"
+            }
+        }
     },
     tanggalLahir: {
         type: DataTypes.DATEONLY,

@@ -7,7 +7,7 @@ export const refreshToken = async (req, res) => {
         if (!refreshToken) return res.sendStatus(401);
         const user = await Users.findAll({ 
             where: { 
-                refresh_token: refreshToken
+                refreshToken: refreshToken // sesuaikan nama kolom jika di DB pakai camelCase
             },
         });
         if (!user[0]) return res.sendStatus(403);
@@ -15,14 +15,12 @@ export const refreshToken = async (req, res) => {
             if (err) return res.sendStatus(403);
             const userId = user[0].id;
             const name = user[0].name;
-            const email = user[0].email;
-            const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' });
+            const nik = user[0].nik;
+            const accessToken = jwt.sign({ userId, name, nik }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' });
             res.json({ accessToken });
         });
-        res.json({ accessToken });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
-        
     }
-    }
+}
