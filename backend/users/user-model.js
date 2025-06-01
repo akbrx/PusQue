@@ -8,19 +8,24 @@ const User = db.define('users', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    email: {
+    nik: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
     },
-    password: {
+    tanggalLahir: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+    },
+    domisili: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    refreshToken: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-    },
+    role: {
+        type: DataTypes.ENUM('pasien', 'admin', 'dokter'),
+        allowNull: false,
+        defaultValue: 'pasien'
+    }
 }, {
     freezeTableName: true,
 });
