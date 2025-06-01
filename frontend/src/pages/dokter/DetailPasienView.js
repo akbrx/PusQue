@@ -1,4 +1,4 @@
-import ktpimg from "../assets/images/ktp.jpg"
+import ktpimg from "../../assets/images/ktp.jpg"
 class DetailPasienView extends HTMLElement {
     set pasien(data) {
       this._pasien = data;

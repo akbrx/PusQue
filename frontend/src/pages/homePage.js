@@ -80,7 +80,8 @@ class PusquePage extends HTMLElement {
         }
 
         .jadwal-grid {
-          display: grid;
+          display: flex;
+          flex-direction: column;
           gap: 15px;
           justify-content: center;
         }
@@ -91,6 +92,7 @@ class PusquePage extends HTMLElement {
             margin-inline: 80px;  
           }
           .jadwal-grid {
+            display: grid;
             grid-template-columns: repeat(2, 1.3fr);
           }
           .hero-img {
@@ -117,6 +119,9 @@ class PusquePage extends HTMLElement {
            
           }
 
+          .jadwal-grid {
+            display: grid;
+          }
         }
 
 
@@ -133,6 +138,9 @@ class PusquePage extends HTMLElement {
           .hero-img {
             width: 60%;
             max-width: 700px;
+          }
+          .jadwal-grid {
+            display: grid;
           }
         }
 

@@ -1,4 +1,4 @@
-import imgpuskes from "../assets/images/download.jpg";
+import imgpuskes from "../../assets/images/download.jpg";
 class AntrianPuskesmas extends HTMLElement {
   constructor() {
     super();
