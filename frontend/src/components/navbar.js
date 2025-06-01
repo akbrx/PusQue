@@ -2,6 +2,45 @@ class MyNavbar extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  render() {
+    const role = localStorage.getItem("userRole");
+
+    let menuItems = `
+      <li><a href="#/">Home</a></li>
+    `;
+
+    if (role === "admin") {
+      menuItems += `
+        <li><a href="#/beranda">Beranda</a></li>
+        <li><a href="#/pengajuan">Pengajuan</a></li>
+        <li><a href="#" id="logout">Logout</a></li>
+      `;
+    } else if (role === "dokter") {
+      menuItems += `
+        <li><a href="#/dokter">Data Pasien</a></li>
+        <li><a href="#/profile">Profil</a></li>
+        <li><a href="#" id="logout">Logout</a></li>
+      `;
+    } else if (role === "pasien") {
+      menuItems += `
+        <li><a href="#/antrian">Antrian</a></li>
+        <li><a href="#/daftar">Daftar</a></li>
+        <li><a href="#/profile">Profil</a></li>
+        <li><a href="#/chatbot">Chatbot</a></li>
+        <li><a href="#" id="logout">Logout</a></li>
+      `;
+    } else {
+      // Belum login
+      menuItems += `
+        <li><a href="#/login">Login</a></li>
+      `;
+    }
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -9,6 +48,7 @@ class MyNavbar extends HTMLElement {
           display: block;
           font-family: Arial, sans-serif;
         }
+
         nav {
           background-color: #407BFF;
           color: white;
@@ -17,26 +57,32 @@ class MyNavbar extends HTMLElement {
           align-items: center;
           padding: 1rem 2rem;
           position: sticky;
+          top: 0;
           z-index: 99999;
         }
+
         .logo {
           font-weight: bold;
           font-size: 1.5rem;
         }
+
         .menu {
           display: flex;
           list-style: none;
           gap: 1rem;
         }
+
         .menu li a {
           color: white;
           text-decoration: none;
         }
+
         .hamburger {
           display: none;
           flex-direction: column;
           cursor: pointer;
         }
+
         .hamburger div {
           width: 25px;
           height: 3px;
@@ -68,9 +114,7 @@ class MyNavbar extends HTMLElement {
       </style>
 
       <nav>
-        <div class="logo">
-          PusQue
-        </div>
+        <div class="logo">PusQue</div>
 
         <div class="hamburger" id="hamburger">
           <div></div>
@@ -84,6 +128,7 @@ class MyNavbar extends HTMLElement {
           <li><a href="#/daftar">Daftar</a></li>
           <li><a href="#/profile">Profil</a></li>
           <li><a href="#/login" id="logoutBtn">Logout</a></li>
+          ${menuItems}
         </ul>
       </nav>
     `;
@@ -100,6 +145,22 @@ class MyNavbar extends HTMLElement {
         window.location.hash = "#/login";
       }
     });
+    // Hamburger toggle
+    this.shadowRoot.querySelector("#hamburger").addEventListener("click", () => {
+      const menu = this.shadowRoot.querySelector("#menu");
+      menu.classList.toggle("show");
+    });
+
+    // Logout
+    const logoutLink = this.shadowRoot.querySelector("#logout");
+    if (logoutLink) {
+      logoutLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("userRole");
+        location.hash = "#/";
+        this.render(); // Refresh menu setelah logout
+      });
+    }
   }
 }
 

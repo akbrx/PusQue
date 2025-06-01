@@ -2,8 +2,8 @@ import "./components/navbar.js";
 import "./components/navbar_a.js";
 import "./pages/homePage.js";
 import "./components/feedBack.js";
-import "./pages/antrianPage.js";
-import "./pages/formPendaftaranAntrian.js";
+import "./pages/pasien/antrianPage.js";
+import "./pages/pasien/formPendaftaranAntrian.js";
 import "./pages/profile.js";
 import "./pages/chatBot.js";
 import './pages/PasienListView.js';
@@ -13,6 +13,15 @@ import './pages/AdminDetailPengajuan.js';
 import './pages/AdminBeranda.js';
 import { renderLoginForm } from './pages/auth/login.js';
 import { renderRegisterForm } from './pages/auth/register.js';
+import "./pages/pasien/chatBot.js";
+import './pages/dokter/PasienListView.js';
+import './pages/dokter/DetailPasienView.js';
+import './pages/admin/AdminPengajuanList.js';
+import './pages/admin/AdminDetailPengajuan.js';
+import './pages/admin/AdminBeranda.js';
+import './pages/loginPage.js';
+import './pages/notFound/notFoundPage.js';
+import './pages/auth/login.js';
 
 const dataPasienDummy = [
   {
@@ -89,58 +98,86 @@ function router() {
   }
 
   // Jika sudah login, render halaman sesuai hash
+  const role = localStorage.getItem("userRole");
+
+  app.innerHTML = '';
+
   if (hash === "" || hash === "#/" || hash === "#/home") {
     const home = document.createElement("pusque-page");
     app.appendChild(home);
-  } else if (hash === "#/antrian") {
+  }
+
+  else if (hash === "#/antrian" && role === "pasien") {
     const antrian = document.createElement("antrian-puskesmas");
     app.appendChild(antrian);
-  } else if (hash === "#/daftar") {
+  }
+
+  else if (hash === "#/daftar" && role === "pasien") {
     const form = document.createElement("daftar-antrian-form");
     app.appendChild(form);
-  } else if (hash === "#/profile") {
+  }
+
+  else if (hash === "#/profile") {
     const profile = document.createElement("profile-view");
     app.appendChild(profile);
-  } else if (hash === "#/chatbot") {
-    const chat = document.createElement("chat-bot");
+  }
+
+  else if (hash === "#/chatbot" && role === "pasien") {
+    const chat = document.createElement("chat-view");
     app.appendChild(chat);
-  } else if (hash.startsWith('#/detailpasien/')) {
+  }
+
+  else if (hash === "#/dokter" && role === "dokter") {
+    const listView = document.createElement("pasien-list-view");
+    listView.dataPasien = dataPasienDummy;
+    app.appendChild(listView);
+  }
+
+  else if (hash === "#/pengajuan" && role === "admin") {
+    const adminList = document.createElement("admin-pengajuan-list");
+    adminList.dataPasien = dataPasienDummy;
+    app.appendChild(adminList);
+  }
+
+  else if (hash === "#/beranda" && role === "admin") {
+    const beranda = document.createElement("admin-beranda");
+    app.appendChild(beranda);
+  }
+
+  else if (hash.startsWith('#/detailpasien/') && role === "dokter") {
     const id = parseInt(hash.split('/')[2]);
     const pasien = dataPasienDummy.find(p => p.id === id);
 
     if (pasien) {
-      const detailView = document.createElement('detail-pasien-view');
+      const detailView = document.createElement("detail-pasien-view");
       detailView.pasien = pasien;
       app.appendChild(detailView);
     } else {
       app.innerHTML = "<h2>Pasien tidak ditemukan</h2>";
     }
+  }
 
-  } else if (hash === '#/dokter') {
-    const listView = document.createElement('pasien-list-view');
-    listView.dataPasien = dataPasienDummy;
-    app.appendChild(listView);
-  } else if (hash === '#/pengajuan') {
-    const adminList = document.createElement('admin-pengajuan-list');
-    adminList.dataPasien = dataPasienDummy;
-    app.appendChild(adminList);
-  } else if (hash.startsWith('#/detailpengajuan/')) {
+  else if (hash.startsWith('#/detailpengajuan/') && role === "admin") {
     const id = parseInt(hash.split('/')[2]);
     const pasien = dataPasienDummy.find(p => p.id === id);
 
     if (pasien) {
-      const detailPengajuan = document.createElement('admin-detail-pengajuan');
+      const detailPengajuan = document.createElement("admin-detail-pengajuan");
       detailPengajuan.pasien = pasien;
       app.appendChild(detailPengajuan);
     } else {
       app.innerHTML = "<h2>Pengajuan tidak ditemukan</h2>";
     }
+  }
 
-  } else if (hash === '#/beranda') {
-    const beranda = document.createElement('admin-beranda');
-    app.appendChild(beranda);
-  } else {
-    app.innerHTML = "<h2>404 - Halaman tidak ditemukan</h2>";
+  else if (hash === "#/login") {
+    const login = document.createElement("login-page");
+    app.appendChild(login);
+  }
+
+  else {
+    const notFound = document.createElement("not-found-page");
+    app.appendChild(notFound);
   }
 }
 
@@ -148,6 +185,9 @@ function logout() {
   localStorage.removeItem('accessToken');
   window.location.hash = "#/login";
 }
+
+
+
 
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);

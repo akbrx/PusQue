@@ -1,5 +1,5 @@
-import logoPusQue from "../assets/logo/logoPusQue.jpg";
-import chatBot from "../assets/icons/chatBot.png";
+import logoPusQue from "../../assets/logo/logoPusQue.jpg";
+import chatBot from "../../assets/icons/chatBot.png";
 
 class ChatView extends HTMLElement {
   constructor() {
@@ -14,7 +14,7 @@ class ChatView extends HTMLElement {
           font-family: Arial, sans-serif;
         }
 
-        .container-chatboot {
+        .container-chatbot {
           display: flex;
           flex-direction: column;
           height: 85vh;
