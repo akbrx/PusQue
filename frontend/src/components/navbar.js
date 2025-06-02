@@ -15,33 +15,6 @@ class MyNavbar extends HTMLElement {
       <li><a href="#/">Home</a></li>
     `;
 
-    if (role === "admin") {
-      menuItems += `
-        <li><a href="#/beranda">Beranda</a></li>
-        <li><a href="#/pengajuan">Pengajuan</a></li>
-        <li><a href="#" id="logout">Logout</a></li>
-      `;
-    } else if (role === "dokter") {
-      menuItems += `
-        <li><a href="#/dokter">Data Pasien</a></li>
-        <li><a href="#/profile">Profil</a></li>
-        <li><a href="#" id="logout">Logout</a></li>
-      `;
-    } else if (role === "pasien") {
-      menuItems += `
-        <li><a href="#/antrian">Antrian</a></li>
-        <li><a href="#/daftar">Daftar</a></li>
-        <li><a href="#/profile">Profil</a></li>
-        <li><a href="#/chatbot">Chatbot</a></li>
-        <li><a href="#" id="logout">Logout</a></li>
-      `;
-    } else {
-      // Belum login
-      menuItems += `
-        <li><a href="#/login">Login</a></li>
-      `;
-    }
-
     this.shadowRoot.innerHTML = `
       <style>
         :host {
@@ -128,7 +101,7 @@ class MyNavbar extends HTMLElement {
           <li><a href="#/daftar">Daftar</a></li>
           <li><a href="#/profile">Profil</a></li>
           <li><a href="#/login" id="logoutBtn">Logout</a></li>
-          ${menuItems}
+          
         </ul>
       </nav>
     `;

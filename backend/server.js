@@ -6,7 +6,7 @@ import router from './routes/index.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import Users from './users/user-model.js';
+//import Users from './users/user-model.js';
 
 dotenv.config();
 const app = express();
@@ -14,8 +14,8 @@ const app = express();
 try {
   await db.authenticate();
   console.log('Database connected');
-  await db.sync();
-  await Users.sync();
+  //await db.sync();
+  //await Users.sync();
 } catch (error) {
   console.log(error);
 }
