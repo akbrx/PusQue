@@ -20,14 +20,16 @@ export function renderRegisterForm(onRegisterSuccess) {
         <input type="text" id="domisili" class="form-control" required />
       </div>
       <div class="mb-2">
-      </div>
-      <div class="mb-2">
         <label for="password" class="form-label">Password</label>
         <input type="password" id="password" class="form-control" required />
       </div>
       <div class="mb-2">
         <label for="confPassword" class="form-label">Konfirmasi Password</label>
         <input type="password" id="confPassword" class="form-control" required />
+      </div>
+      <div class="mb-2">
+        <label for="fotoKtp" class="form-label">Foto KTP</label>
+        <input type="file" id="fotoKtp" name="fotoKtp" accept="image/*" required />
       </div>
       <button type="submit" class="btn btn-success w-100">Register</button>
       <div class="message mt-2 text-center" id="regMessage"></div>
@@ -49,11 +51,20 @@ export function renderRegisterForm(onRegisterSuccess) {
     const messageDiv = document.getElementById('regMessage');
     messageDiv.textContent = '';
 
+    // FormData
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('nik', nik);
+    formData.append('tanggalLahir', tanggalLahir);
+    formData.append('domisili', domisili);
+    formData.append('password', password);
+    formData.append('confPassword', confPassword);
+    formData.append('fotoKtp', document.getElementById('fotoKtp').files[0]);
+
     try {
       const res = await fetch('http://localhost:5000/users', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, nik, tanggalLahir, domisili, password, confPassword })
+        body: formData
       });
       const data = await res.json();
       if (res.ok) {

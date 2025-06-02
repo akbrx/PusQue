@@ -16,10 +16,11 @@ export const getUsers = async (req, res) => {
 }
 
 export const Register = async (req, res) => {
-    const { name, nik, tanggalLahir, domisili, role, password, confPassword } = req.body;
+    const { name, nik, tanggalLahir, domisili, password, confPassword } = req.body;
+    const fotoKtp = req.file ? req.file.filename : null;
 
     // Validasi field wajib
-    if (!name || !nik || !tanggalLahir || !domisili || !password || !confPassword) {
+    if (!name || !nik || !tanggalLahir || !domisili || !password || !confPassword || !fotoKtp) {
         return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -41,6 +42,7 @@ export const Register = async (req, res) => {
             nik,
             tanggalLahir,
             domisili,
+            fotoKtp, // simpan nama file
             password: hashedPassword
         });
 

@@ -1,4 +1,4 @@
-//hilangkan semua komentar (di on kan) untuk create database
+//hilangkan semua komentar (di on kan) untuk create tabel di database
 
 import express from 'express';
 import db from './config/database.js';
@@ -6,7 +6,7 @@ import router from './routes/index.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-//import Users from './users/user-model.js';
+//import Users from './users/user-model.js'; //idupkan ini jika ingin membuat tabel users
 
 dotenv.config();
 const app = express();

@@ -30,10 +30,10 @@ const User = db.define('users', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    // fotoKtp: {
-    //     type: DataTypes.STRING,
-    //     allowNull: false,
-    // },
+    fotoKtp: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     role: {
         type: DataTypes.ENUM('pasien', 'admin', 'dokter'),
         allowNull: false,
