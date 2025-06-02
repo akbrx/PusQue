@@ -91,7 +91,7 @@ export const Login = async (req, res) => {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000
         });
-        res.json({ accsessToken });
+        res.json({ accsessToken, role });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

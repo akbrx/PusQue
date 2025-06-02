@@ -37,12 +37,22 @@ export function renderLoginForm(onLoginSuccess) {
       .then(function (res) {
         return res.json().then(function (data) {
           if (res.ok) {
-            localStorage.setItem('accessToken', data.accsessToken); // typo "accsessToken"?
+            localStorage.setItem('accessToken', data.accessToken); 
+            localStorage.setItem('userRole', data.role);
             messageDiv.classList.add('text-success');
             messageDiv.textContent = 'Login berhasil!';
             setTimeout(function () {
-              if (typeof onLoginSuccess === 'function') {
-                onLoginSuccess();
+              // Redirect sesuai role
+              if (data.role === 'admin') {
+                window.location.hash = "#/beranda";
+              } else if (data.role === 'dokter') {
+                window.location.hash = "#/dokter";
+              } else {
+                if (typeof onLoginSuccess === 'function') {
+                  onLoginSuccess();
+                } else {
+                  window.location.hash = "#/";
+                }
               }
             }, 1000);
           } else {
