@@ -13,17 +13,20 @@ class AdminDetailPengajuan extends HTMLElement {
 
   async fetchDetailAntrian(id) {
     try {
-      // Ambil semua antrian untuk dapat urutan
+      // Ambil semua antrian
       const resAll = await fetch('http://localhost:5000/antrian', {
         credentials: 'include'
       });
       const allData = await resAll.json();
 
-      // Urutkan berdasarkan createdAt (pastikan backend mengirim field ini)
-      allData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      // Filter hanya antrian aktif (bukan ditolak)
+      const aktifData = allData.filter(a => a.status !== 'ditolak');
 
-      // Cari index antrian yang sedang dibuka
-      const idx = allData.findIndex(a => a.id == id);
+      // Urutkan berdasarkan createdAt
+      aktifData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+      // Cari index antrian yang sedang dibuka di antrian aktif
+      const idx = aktifData.findIndex(a => a.id == id);
 
       // Ambil detail antrian yang sedang dibuka
       const res = await fetch(`http://localhost:5000/antrian/${id}`, {
@@ -34,7 +37,7 @@ class AdminDetailPengajuan extends HTMLElement {
 
       this.pasien = {
         nama: data.user?.name || '-',
-        antrian: idx >= 0 ? idx + 1 : '-', // No antrian dinamis
+        antrian: idx >= 0 ? idx + 1 : '-', // No antrian dinamis dari antrian aktif
         tglLahir: data.user?.tanggalLahir || '-',
         nik: data.user?.nik || '-',
         fotoKtp: data.user?.fotoKtp || '',
@@ -47,6 +50,7 @@ class AdminDetailPengajuan extends HTMLElement {
   }
 
   render() {
+    console.log("Data pasien di render:", this._pasien);
     if (!this._pasien) {
       this.innerHTML = `<p class="text-danger">Data pasien tidak ditemukan.</p>`;
       return;
@@ -101,16 +105,60 @@ class AdminDetailPengajuan extends HTMLElement {
             </table>
             <div class="row mt-3 justify-content-end">
               <div class="col-4">
-                <a href="#/pengajuan" class="btn w-100" style="background-color: #FF0000; color: white;">Tolak</a>
+                <button id="btn-tolak" class="btn w-100" style="background-color: #FF0000; color: white;">Tolak</button>
               </div>
               <div class="col-4">
-                <a href="#/pengajuan" class="btn btn-primary w-100">Setujui</a>
+                <button id="btn-acc" class="btn btn-primary w-100">Setujui</button>
               </div>
             </div>
           </div>
         </div>
       </section>
     `;
+
+    // Event listener tombol
+    this.querySelector('#btn-tolak')?.addEventListener('click', () => this.tolakAntrian());
+    this.querySelector('#btn-acc')?.addEventListener('click', () => this.accAntrian());
+  }
+
+  async tolakAntrian() {
+    if (!confirm('Yakin ingin menolak antrian ini?')) return;
+    try {
+      const id = window.location.hash.split('/')[2];
+      const res = await fetch(`http://localhost:5000/antrian/${id}/tolak`, {
+        method: 'PATCH',
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('Antrian berhasil ditolak.');
+        window.location.hash = '#/pengajuan';
+      } else {
+        alert(data.message || 'Gagal menolak antrian');
+      }
+    } catch (err) {
+      alert('Terjadi error saat menolak antrian');
+    }
+  }
+
+  async accAntrian() {
+    if (!confirm('Yakin ingin menyetujui antrian ini?')) return;
+    try {
+      const id = window.location.hash.split('/')[2];
+      const res = await fetch(`http://localhost:5000/antrian/${id}/acc`, {
+        method: 'PATCH',
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('Antrian berhasil disetujui.');
+        window.location.hash = '#/pengajuan';
+      } else {
+        alert(data.message || 'Gagal menyetujui antrian');
+      }
+    } catch (err) {
+      alert('Terjadi error saat menyetujui antrian');
+    }
   }
 }
 

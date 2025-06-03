@@ -152,16 +152,8 @@ function router() {
   }
 
   else if (hash.startsWith('#/detailpengajuan/') && role === "admin") {
-    const id = parseInt(hash.split('/')[2]);
-    const pasien = dataPasienDummy.find(p => p.id === id);
-
-    if (pasien) {
-      const detailPengajuan = document.createElement("admin-detail-pengajuan");
-      detailPengajuan.pasien = pasien;
-      app.appendChild(detailPengajuan);
-    } else {
-      app.innerHTML = "<h2>Pengajuan tidak ditemukan</h2>";
-    }
+    const detailPengajuan = document.createElement("admin-detail-pengajuan");
+    app.appendChild(detailPengajuan);
   }
 
   else if (hash === "#/login") {
