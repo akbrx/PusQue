@@ -9,6 +9,42 @@ class DaftarAntrianForm extends HTMLElement {
     this.shadowRoot.querySelectorAll('input[name="poli"]').forEach(radio => {
       radio.addEventListener('change', () => this.updateCheckboxes());
     });
+
+    // Tambahkan event listener submit
+    this.shadowRoot.querySelector('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Ambil data keluhan (bisa lebih dari satu)
+      const keluhanArr = Array.from(this.shadowRoot.querySelectorAll('input[name="keluhan"]:checked')).map(cb => cb.value);
+      const keluhan = keluhanArr.join(', ');
+
+      // (Opsional) Ambil poli dan tanggal jika ingin dikirim juga
+      const poli = this.shadowRoot.querySelector('input[name="poli"]:checked').value;
+      // const tanggal = this.shadowRoot.querySelector('input[name="tanggal"]').value;
+
+      // Kirim ke backend
+      try {
+        const res = await fetch('http://localhost:5000/antrian', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Sertakan Authorization jika backend pakai JWT di header
+            // 'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+          },
+          credentials: 'include', // jika backend pakai cookie JWT
+          body: JSON.stringify({ keluhan, poli })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Antrian berhasil didaftarkan!');
+          // Reset form atau redirect sesuai kebutuhan
+        } else {
+          alert(data.message || 'Gagal mendaftar antrian');
+        }
+      } catch (err) {
+        alert('Terjadi error koneksi');
+      }
+    });
   }
 
   updateCheckboxes() {

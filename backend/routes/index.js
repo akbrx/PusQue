@@ -3,6 +3,7 @@ import multer from 'multer';
 import { getUsers, Register, Login, Logout } from '../users/users-controller.js';
 import { verifyToken } from '../middleware/verifiy-token.js';
 import { refreshToken } from '../users/refresh-token.js';
+import { createAntrian, accAntrian, tolakAntrian, selesaiAntrian } from '../antrian/antrian-controller.js';
 
 const router = express.Router();
 
@@ -18,9 +19,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.get('/users', verifyToken, getUsers);
-router.post('/users', upload.single('fotoKtp'), Register); // <-- pakai upload.single
+router.post('/users', upload.single('fotoKtp'), Register);
 router.post('/login', Login);
 router.get('/token', refreshToken);
 router.delete('/logout', Logout);
+router.post('/antrian', verifyToken, createAntrian);
+router.patch('/antrian/:id/acc', verifyToken, accAntrian);
+router.patch('/antrian/:id/tolak', verifyToken, tolakAntrian);
+router.patch('/antrian/:id/selesai', verifyToken, selesaiAntrian);
 
 export default router;
