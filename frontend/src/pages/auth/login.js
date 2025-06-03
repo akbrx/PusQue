@@ -1,16 +1,43 @@
+import loginimg from "../../assets/images/login.png"
 export function renderLoginForm(onLoginSuccess) {
   var app = document.getElementById('app');
   app.innerHTML = `
-    <form id="loginForm" class="p-4 m-auto" style="max-width:400px;">
-      <h2 class="mb-3 text-center">Login</h2>
-      <input type="text" id="nik" class="form-control mb-2" placeholder="NIK" required />
-      <input type="password" id="password" class="form-control mb-2" placeholder="Password" required />
-      <button type="submit" class="btn btn-primary w-100">Login</button>
-      <div class="message mt-2 text-center" id="message"></div>
-      <p class="mt-3 text-center">
-        Belum punya akun? <a href="#/register">Register di sini</a>
-      </p>
-    </form>
+  <section class="container py-5">
+  <div class="d-flex justify-content-center align-items-center min-vh-10">
+    <div class="card shadow" style="width: 100%; max-width: 800px;  border-radius: 15px;">
+      <div class="card-body p-0">
+        <div class="d-flex" style="height: 100%;">
+          <!-- Form Login (50%) -->
+          <div class="login-wrap p-4 p-md-5" style="width: 50%;">
+            <h2 class="mb-3 text-start">Login</h2>
+            <p class="mb-3 text-start small">Silahkan login menggunakan akun anda.</p>
+            <form id="loginForm" class="signin-form">
+              <div class="form-floating mb-3">
+              <input type="text" id="nik" class="form-control" placeholder="NIK" required />
+                <label for="nik">NIK</label>
+              </div>
+              <div class="form-floating mb-3">
+              <input type="password" id="password" class="form-control" placeholder="Password" required />
+              <label class="label" for="password">Password</label>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="form-control btn btn-primary rounded submit px-3">Login</button>
+              </div>
+              <div class="message mt-2 text-center" id="message"></div>
+              <p class="mt-3 text-center">
+                Belum punya akun? <a href="#/register">Register di sini</a>
+              </p>
+            </form>
+          </div>
+
+          <!-- Gambar Login (50%) -->
+          <div class="login-img" style="width: 50%; background-image: url(${loginimg}); background-size: cover; background-position: center;  border-radius: 15px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
   `;
 
   var form = document.getElementById('loginForm');
