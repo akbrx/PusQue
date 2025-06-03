@@ -206,7 +206,7 @@ class PusquePage extends HTMLElement {
           <div class="hero-content">
             <div class="hero-text">
               <h2>PusQue</h2>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus laborum sit alias tempore aperiam nulla maiores! Quisquam quia rem, doloribus consequuntur fugiat ducimus totam eum praesentium, aliquid beatae id ipsa?Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet deserunt mollitia officiis maiores sequi unde molestias eaque nam laudantium voluptates necessitatibus, delectus eos esse corrupti perspiciatis, ad libero, non minima?</p>
+              <p>PusQue hadir untuk memudahkan Anda dalam mengakses layanan puskesmas dengan lebih cepat dan praktis. Melalui sistem ini, Anda dapat melakukan pendaftaran secara online dan mengambil nomor antrian tanpa harus menunggu lama di lokasi. Silakan gunakan menu yang tersedia untuk memulai.</p>
               <button>Daftar Antrean</button>
             </div>
             <img src="${heroImg}" alt="Antrian" class="hero-img" />
@@ -238,7 +238,7 @@ class PusquePage extends HTMLElement {
             </div>
             <div class="jadwal-card">
               <div class="jadwal-header">
-                <span>Senin</span>
+                <span>Selasa</span>
                 <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="calendar">
               </div>
               <div class="jadwal-content">
@@ -253,7 +253,7 @@ class PusquePage extends HTMLElement {
             </div>
             <div class="jadwal-card">
               <div class="jadwal-header">
-                <span>Senin</span>
+                <span>Rabu</span>
                 <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="calendar">
               </div>
               <div class="jadwal-content">
@@ -268,7 +268,7 @@ class PusquePage extends HTMLElement {
             </div>
             <div class="jadwal-card">
               <div class="jadwal-header">
-                <span>Senin</span>
+                <span>Kamis</span>
                 <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="calendar">
               </div>
               <div class="jadwal-content">
@@ -283,7 +283,7 @@ class PusquePage extends HTMLElement {
             </div>
             <div class="jadwal-card">
               <div class="jadwal-header">
-                <span>Senin</span>
+                <span>Jumat</span>
                 <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="calendar">
               </div>
               <div class="jadwal-content">
@@ -298,7 +298,7 @@ class PusquePage extends HTMLElement {
             </div>
             <div class="jadwal-card">
               <div class="jadwal-header">
-                <span>Senin</span>
+                <span>Sabtu</span>
                 <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="calendar">
               </div>
               <div class="jadwal-content">
