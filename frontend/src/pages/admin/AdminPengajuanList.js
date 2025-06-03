@@ -4,6 +4,23 @@ class AdminPengajuanList extends HTMLElement {
       this.render();
     }
   
+    connectedCallback() {
+      this.fetchAntrian();
+    }
+  
+    async fetchAntrian() {
+      try {
+        const res = await fetch('http://localhost:5000/antrian', {
+          credentials: 'include'
+        });
+        if (!res.ok) throw new Error('Gagal mengambil data antrian');
+        const data = await res.json();
+        this.dataPasien = data;
+      } catch (err) {
+        this.innerHTML = `<p class="text-center text-danger">Gagal memuat data antrian</p>`;
+      }
+    }
+  
     render() {
       if (!this._dataPasien) {
         this.innerHTML = `<p class="text-center">Loading...</p>`;
@@ -13,18 +30,8 @@ class AdminPengajuanList extends HTMLElement {
       this.innerHTML = `
         <section class="pasien-container container-xl py-5">
           <h1 class="text-center mb-4">Menunggu Persetujuan</h1>
-  
-          <!-- Filter Dropdown -->
           <div class="card shadow-sm">
             <div class="card-body">
-              <div class="d-flex justify-content-end mb-3">
-                <label for="filterSelect" class="me-2">Filter :</label>
-                <select id="filterSelect" class="form-select w-auto">
-                  <option value="antrian">Belum Disetujui</option>
-                </select>
-              </div>
-  
-              <!-- Tabel -->
               <div class="table-responsive">
                 <table class="table" id="pasienTable">
                   <thead class="table-secondary">
@@ -35,13 +42,13 @@ class AdminPengajuanList extends HTMLElement {
                     </tr>
                   </thead>
                   <tbody>
-                    ${this._dataPasien.map((pasien, index) => `
+                    ${this._dataPasien.map((antrian, index) => `
                       <tr>
                         <td>${index + 1}</td>
-                        <td>${pasien.nama}</td>
+                        <td>${antrian.user ? antrian.user.name : '-'}</td>
                         <td>
                           <div class="d-flex justify-content-center align-items-center">
-                            <a href="#/detailpengajuan/${pasien.id}" class="text-primary text-decoration-none me-5">Detail</a>
+                            <a href="#/detailpengajuan/${antrian.id}" class="text-primary text-decoration-none me-5">Detail</a>
                           </div>
                         </td>
                       </tr>
@@ -59,4 +66,3 @@ class AdminPengajuanList extends HTMLElement {
   if (!customElements.get('admin-pengajuan-list')) {
     customElements.define('admin-pengajuan-list', AdminPengajuanList);
   }
-  

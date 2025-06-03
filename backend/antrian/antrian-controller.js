@@ -66,3 +66,22 @@ export const selesaiAntrian = async (req, res) => {
   res.json({ message: "Antrian selesai", antrian });
 };
 
+// Admin ambil semua antrian
+export const getAllAntrian = async (req, res) => {
+  // Pastikan req.role === 'admin'
+  const antrian = await Antrian.findAll({
+    include: [{ model: Users, attributes: ['name', 'nik', 'role'] }],
+    order: [['createdAt', 'ASC']]
+  });
+  res.json(antrian);
+};
+
+// Detail antrian 
+export const getAntrianById = async (req, res) => {
+  const { id } = req.params;
+  const antrian = await Antrian.findByPk(id, {
+    include: [{ model: Users, attributes: ['name', 'nik', 'tanggalLahir', 'fotoKtp'] }]
+  });
+  if (!antrian) return res.status(404).json({ message: "Antrian tidak ditemukan" });
+  res.json(antrian);
+};
