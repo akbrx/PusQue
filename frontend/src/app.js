@@ -61,6 +61,11 @@ function router() {
   // Jika sudah login, render halaman sesuai hash
   const role = localStorage.getItem("userRole");
 
+  const navbar = document.querySelector('my-navbar');
+  if (navbar) {
+    navbar.render(); // Pastikan navbar dirender ulang
+  }
+
   app.innerHTML = '';
 
   if (hash === "" || hash === "#/" || hash === "#/home") {
