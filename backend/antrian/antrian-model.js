@@ -28,7 +28,12 @@ const Antrian = db.define('antrian', {
     type: DataTypes.ENUM('menunggu acc admin', 'dalam antrian', 'selesai', 'ditolak'),
     allowNull: false,
     defaultValue: 'menunggu acc admin'
-  }
+  },
+  queue_number: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
 }, {
   freezeTableName: true,
   timestamps: true // createdAt & updatedAt

@@ -12,11 +12,11 @@ class PasienListView extends HTMLElement {
     if (this._selectedPoli && this._selectedPoli !== 'semua') {
       filtered = filtered.filter(p => p.poli === this._selectedPoli);
     }
-    // Urutkan berdasarkan createdAt
-    filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    // Urutkan berdasarkan queue_number (bukan createdAt)
+    filtered.sort((a, b) => a.queue_number - b.queue_number);
     this._dataPasien = filtered.map((p, idx) => ({
       id: p.id,
-      antrian: idx + 1,
+      antrian: p.queue_number, // tampilkan queue_number asli dari backend
       nama: p.user?.name || '-',
       poli: p.poli,
       status: p.status
@@ -25,7 +25,6 @@ class PasienListView extends HTMLElement {
   }
 
   connectedCallback() {
-    // Agar filter tetap jalan saat komponen di-mount ulang
     this._selectedPoli = this._selectedPoli || 'semua';
   }
 
@@ -35,7 +34,6 @@ class PasienListView extends HTMLElement {
       return;
     }
 
-    // Dropdown filter poli
     this.innerHTML = `
       <section class="pasien-container container-xl py-5">
         <h1 class="text-center mb-4">Daftar Pasien</h1>
@@ -70,9 +68,8 @@ class PasienListView extends HTMLElement {
                       <td>${pasien.poli}</td>
                       <td>
                         <div class="d-flex justify-content-center align-items-center">
-                          <a href="#/detailpasien/${pasien.id}" class="text-primary text-decoration-none me-5">Detail</a>
-                          <span class="text-danger me-5">Belum Datang</span>
-                          <span class="text-success">Proses</span>
+                          <button class="btn btn-info btn-sm btn-detail me-3" data-id="${pasien.id}">Detail</button>
+                          <button class="btn btn-success btn-sm btn-selesai" data-id="${pasien.id}">Selesai</button>
                         </div>
                       </td>
                     </tr>
@@ -89,6 +86,36 @@ class PasienListView extends HTMLElement {
     this.querySelector('#filter-poli').addEventListener('change', (e) => {
       this._selectedPoli = e.target.value;
       this.applyFilter();
+    });
+
+    // Event listener untuk tombol detail
+    this.querySelectorAll('.btn-detail').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        window.location.hash = `#/detailpasien/${id}`;
+      });
+    });
+    // Event listener untuk tombol selesai
+    this.querySelectorAll('.btn-selesai').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Tandai antrian ini sebagai selesai?')) return;
+        const id = btn.getAttribute('data-id');
+        try {
+          const res = await fetch(`http://localhost:5000/antrian/${id}/selesai`, {
+            method: 'PATCH',
+            credentials: 'include'
+          });
+          if (res.ok) {
+            alert('Antrian berhasil diselesaikan.');
+            window.location.reload();
+          } else {
+            const data = await res.json().catch(() => ({}));
+            alert(data.message || 'Gagal menyelesaikan antrian.');
+          }
+        } catch (err) {
+          alert('Terjadi error saat menyelesaikan antrian.');
+        }
+      });
     });
   }
 }

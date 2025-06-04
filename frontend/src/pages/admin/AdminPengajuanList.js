@@ -58,7 +58,7 @@ class AdminPengajuanList extends HTMLElement {
                         <td>${antrian.user ? antrian.user.name : '-'}</td>
                         <td>
                           <div class="d-flex justify-content-center align-items-center">
-                            <a href="#/detailpengajuan/${antrian.id}" class="text-primary text-decoration-none me-5">Detail</a>
+                            <button class="btn btn-info btn-sm btn-detail me-3" data-id="${antrian.id}">Detail</button>
                           </div>
                         </td>
                       </tr>
@@ -166,6 +166,14 @@ class AdminPengajuanList extends HTMLElement {
               alert('Terjadi error saat mengembalikan antrian.');
             }
           }
+        });
+      });
+  
+      // Event listener tombol detail
+      this.querySelectorAll('.btn-detail').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          window.location.hash = `#/detailpengajuan/${id}`;
         });
       });
     }

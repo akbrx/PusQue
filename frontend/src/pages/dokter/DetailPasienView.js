@@ -1,16 +1,28 @@
 import ktpimg from "../../assets/images/ktp.jpg"
 class DetailPasienView extends HTMLElement {
     set pasien(data) {
-      this._pasien = data;
+      // Mapping data dari backend ke frontend
+      this._pasien = {
+        id: data.id,
+        nama: data.user?.name || '-',
+        antrian: data.queue_number || '-',
+        tglLahir: data.user?.tanggalLahir || '-',
+        nik: data.user?.nik || '-',
+        fotoKtp: data.user?.fotoKtp || '',
+        poli: data.poli || '-',
+        keluhan: Array.isArray(data.keluhan)
+          ? data.keluhan
+          : (typeof data.keluhan === 'string' ? data.keluhan.split(',').map(k => k.trim()) : [])
+      };
       this.render();
     }
-  
+
     render() {
       if (!this._pasien) {
         this.innerHTML = `<p class="text-danger">Data pasien tidak ditemukan.</p>`;
         return;
       }
-  
+
       this.innerHTML = `
         <section class="container py-5">
         <h2 class="mb-4">Detail Pasien</h2>
@@ -36,12 +48,6 @@ class DetailPasienView extends HTMLElement {
                   <td style="padding-left: 35rem;">${this._pasien.nik}</td>
                 </tr>
                 <tr>
-                  <th scope="row">Foto KTP</th>
-                  <td style="padding-left: 35rem;">
-                  <img class="ktp-img" src="${ktpimg}" alt="KTP" />
-                  </td>
-                </tr>
-                <tr>
                   <th scope="row">Poli</th>
                   <td style="padding-left: 35rem;">${this._pasien.poli}</td>
                 </tr>
@@ -57,13 +63,52 @@ class DetailPasienView extends HTMLElement {
           </table>
           <div class="d-grid gap-2 col-4 ms-auto mt-3">
             <a href="#/dokter" class="btn btn-primary mt-3">Selesai</a>
+            <button id="btn-turunkan" class="btn btn-warning mt-2">Turunkan Antrian</button>
           </div>
-
-          
         </div>
         </div>
         </section>
       `;
+
+      // Event listener tombol turunkan
+      this.querySelector('#btn-turunkan')?.addEventListener('click', async () => {
+        if (!confirm('Yakin ingin menurunkan antrian pasien ini satu tingkat ke bawah?')) return;
+        try {
+          const res = await fetch(`http://localhost:5000/antrian/${this._pasien.id}/mundur`, {
+            method: 'PATCH',
+            credentials: 'include'
+          });
+          if (res.ok) {
+            alert('Antrian berhasil diturunkan.');
+            window.location.hash = '#/dokter';
+          } else {
+            const data = await res.json().catch(() => ({}));
+            alert(data.message || 'Gagal menurunkan antrian.');
+          }
+        } catch (err) {
+          alert('Terjadi error saat menurunkan antrian.');
+        }
+      });
+
+      this.querySelector('a.btn.btn-primary')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (!confirm('Tandai antrian ini sebagai selesai?')) return;
+        try {
+          const res = await fetch(`http://localhost:5000/antrian/${this._pasien.id}/selesai`, {
+            method: 'PATCH',
+            credentials: 'include'
+          });
+          if (res.ok) {
+            alert('Antrian berhasil diselesaikan.');
+            window.location.hash = '#/dokter';
+          } else {
+            const data = await res.json().catch(() => ({}));
+            alert(data.message || 'Gagal menyelesaikan antrian.');
+          }
+        } catch (err) {
+          alert('Terjadi error saat menyelesaikan antrian.');
+        }
+      });
     }
   }
   

@@ -3,10 +3,12 @@ import multer from 'multer';
 import { getUsers, Register, Login, Logout } from '../users/users-controller.js';
 import { verifyToken } from '../middleware/verifiy-token.js';
 import { refreshToken } from '../users/refresh-token.js';
-import { createAntrian, accAntrian, tolakAntrian, selesaiAntrian, getAllAntrian } from '../antrian/antrian-controller.js';
+import { getAllAntrian } from '../antrian/antrian-controller.js';
+import { createAntrian, accAntrian, tolakAntrian, selesaiAntrian } from '../antrian/antrian-controller.js';
 import { getAntrianById } from '../antrian/antrian-controller.js';
 import { kembalikanAntrian } from '../antrian/antrian-controller.js';
 import { deleteAntrian } from '../antrian/antrian-controller.js';
+import { mundurkanAntrian } from '../antrian/antrian-controller.js';
 
 const router = express.Router();
 
@@ -37,5 +39,6 @@ router.patch('/antrian/:id/selesai', verifyToken, selesaiAntrian);
 router.patch('/antrian/:id/kembalikan', verifyToken, kembalikanAntrian);
 router.delete('/antrian/:id', verifyToken, deleteAntrian);
 router.get('/antrian/:id', verifyToken, getAntrianById);
+router.patch('/antrian/:id/mundur', verifyToken, mundurkanAntrian);
 
 export default router;

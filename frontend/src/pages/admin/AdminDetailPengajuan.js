@@ -37,7 +37,7 @@ class AdminDetailPengajuan extends HTMLElement {
 
       this.pasien = {
         nama: data.user?.name || '-',
-        antrian: idx >= 0 ? idx + 1 : '-', // No antrian dinamis dari antrian aktif
+        antrian: (data.status === 'dalam antrian') ? (data.queue_number || '-') : '-', // <-- ubah di sini
         tglLahir: data.user?.tanggalLahir || '-',
         nik: data.user?.nik || '-',
         fotoKtp: data.user?.fotoKtp || '',

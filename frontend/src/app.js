@@ -130,15 +130,21 @@ function router() {
 
   else if (hash.startsWith('#/detailpasien/') && role === "dokter") {
     const id = parseInt(hash.split('/')[2]);
-    const pasien = dataPasienDummy.find(p => p.id === id);
-
-    if (pasien) {
-      const detailView = document.createElement("detail-pasien-view");
-      detailView.pasien = pasien;
-      app.appendChild(detailView);
-    } else {
-      app.innerHTML = "<h2>Pasien tidak ditemukan</h2>";
-    }
+    const detailView = document.createElement("detail-pasien-view");
+    // Fetch detail pasien dari backend
+    fetch(`http://localhost:5000/antrian/${id}`, { credentials: 'include' })
+      .then(res => {
+        if (!res.ok) throw new Error('Pasien tidak ditemukan');
+        return res.json();
+      })
+      .then(data => {
+        detailView.pasien = data;
+        app.appendChild(detailView);
+      })
+      .catch(err => {
+        app.innerHTML = "<h2>Pasien tidak ditemukan</h2>";
+        console.error(err);
+      });
   }
 
   else if (hash.startsWith('#/detailpengajuan/') && role === "admin") {

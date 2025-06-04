@@ -1,10 +1,11 @@
 import Antrian from "./antrian-model.js";
 import Users from "../users/user-model.js";
 
+// Buat antrian baru
 export const createAntrian = async (req, res) => {
   try {
     const { keluhan, poli } = req.body;
-    const userId = req.userId; // diasumsikan sudah di-set oleh middleware auth/JWT
+    const userId = req.userId; 
 
     if (!keluhan || !poli) {
       return res.status(400).json({ message: "Keluhan dan poli wajib diisi" });
@@ -32,19 +33,56 @@ export const createAntrian = async (req, res) => {
 
 // Admin ACC antrian
 export const accAntrian = async (req, res) => {
-  // Pastikan req.userRole === 'admin'
   const { id } = req.params;
   const antrian = await Antrian.findByPk(id);
   if (!antrian) return res.status(404).json({ message: "Antrian tidak ditemukan" });
   if (antrian.status !== 'menunggu acc admin') return res.status(400).json({ message: "Antrian sudah diproses" });
+
+  // Cari queue_number terbesar untuk poli yang sama
+  const maxQueue = await Antrian.max('queue_number', {
+    where: { poli: antrian.poli, status: 'dalam antrian' }
+  });
   antrian.status = 'dalam antrian';
+  antrian.queue_number = (maxQueue || 0) + 1;
   await antrian.save();
   res.json({ message: "Antrian di-ACC, masuk dalam antrian", antrian });
 };
 
+// Admin menurnkan antrian
+export const mundurkanAntrian = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const antrian = await Antrian.findByPk(id);
+    if (!antrian) return res.status(404).json({ message: "Antrian tidak ditemukan" });
+    if (antrian.status !== 'dalam antrian') return res.status(400).json({ message: "Antrian tidak dalam status 'dalam antrian'" });
+
+    // Cari antrian berikutnya di poli yang sama
+    const nextAntrian = await Antrian.findOne({
+      where: {
+        poli: antrian.poli,
+        status: 'dalam antrian',
+        queue_number: antrian.queue_number + 1
+      }
+    });
+
+    if (!nextAntrian) return res.status(400).json({ message: "Tidak bisa diturunkan lagi (sudah paling bawah)" });
+
+    // Tukar queue_number
+    const temp = antrian.queue_number;
+    antrian.queue_number = nextAntrian.queue_number;
+    nextAntrian.queue_number = temp;
+
+    await antrian.save();
+    await nextAntrian.save();
+
+    res.json({ message: "Antrian berhasil diturunkan" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // Admin tolak antrian
 export const tolakAntrian = async (req, res) => {
-  // Pastikan req.userRole === 'admin'
   const { id } = req.params;
   const antrian = await Antrian.findByPk(id);
   if (!antrian) return res.status(404).json({ message: "Antrian tidak ditemukan" });
@@ -56,7 +94,6 @@ export const tolakAntrian = async (req, res) => {
 
 // Dokter update status antrian ke selesai
 export const selesaiAntrian = async (req, res) => {
-  // Pastikan req.userRole === 'dokter'
   const { id } = req.params;
   const antrian = await Antrian.findByPk(id);
   if (!antrian) return res.status(404).json({ message: "Antrian tidak ditemukan" });
@@ -68,10 +105,9 @@ export const selesaiAntrian = async (req, res) => {
 
 // Admin ambil semua antrian
 export const getAllAntrian = async (req, res) => {
-  // Pastikan req.role === 'admin'
   const antrian = await Antrian.findAll({
     include: [{ model: Users, attributes: ['name', 'nik', 'role'] }],
-    order: [['createdAt', 'ASC']]
+    order: [['queue_number', 'ASC']]
   });
   res.json(antrian);
 };
