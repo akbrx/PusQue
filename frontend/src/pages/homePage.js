@@ -192,6 +192,30 @@ class PusquePage extends HTMLElement {
           border-radius: 10px;
         }
 
+        .chat-button {
+          position: fixed;
+          bottom: 20px;      /* jarak dari bawah layar */
+          right: 20px;       /* jarak dari kanan layar */
+          background-color: #007bff;
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          font-size: 18px;
+          cursor: pointer;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;     /* agar di atas elemen lain */
+          transition: background-color 0.3s ease;
+        }
+        
+        .chat-button:hover {
+          background-color: #0056b3;
+        }        
+
         .footer {
           background: #007bff;
           color: white;
@@ -318,10 +342,14 @@ class PusquePage extends HTMLElement {
           <img src="${bennerImg}" alt="Kampanye Kesehatan">
         </section>
       </div>
+
+      <button class="chat-button">Chat</button>
+
   
       <footer class="footer">© 2025 PusQue</footer>
     `;
   }
+  
 }
 
 customElements.define('pusque-page', PusquePage);

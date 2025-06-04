@@ -135,62 +135,101 @@ class ChatView extends HTMLElement {
         }
       </style>
 
-      <div class="container-chatbot">
-        <div class="main-content">
-          <div class="logo-wrapper">
-            <img class="logo" src="${logoPusQue}" alt="Logo PusQue" />
-          </div>
-          <div class="chat-area">
-            <div class="box-chat" id="chatBox">
-              ${this.renderMessages()}
+            <div class="container-chatbot">
+              <div class="main-content">
+                <div class="logo-wrapper">
+                  <img class="logo" src="${logoPusQue}" alt="Logo PusQue" />
+                </div>
+                <div class="chat-area">
+                  <div class="box-chat" id="chatBox">
+                    <div class="chat bot">
+                      <img class="icon" src="${chatBot}" alt="Bot Icon" />
+                      <div class="bubble">Halo! Ada yang bisa saya bantu?</div>
+                    </div>
+                  </div>
+                  <div class="input-area">
+                    <input type="text" placeholder="Tulis pesan..." />
+                    <button>&#10148;</button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="input-area">
-              <input type="text" placeholder="Tulis pesan..." />
-              <button>&#10148;</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  renderMessages() {
-    return `
-      <div class="chat bot">
-        <img class="icon" src="${chatBot}" alt="Bot Icon" />
-        <div class="bubble">Halo! Ada yang bisa saya bantu?</div>
-      </div>
-      <div class="chat user">
-        <div class="bubble">Jam buka puskesmas kapan?</div>
-      </div>
-      <div class="chat bot">
-        <img class="icon" src="${chatBot}" alt="Bot Icon" />
-        <div class="bubble">Senin - Jumat, pukul 07.30 sampai 14.00 WIB</div>
-      </div>
-      <div class="chat user">
-        <div class="bubble">Terima kasih!</div>
-      </div>
-      <div class="chat bot">
-        <img class="icon" src="${chatBot}" alt="Bot Icon" />
-        <div class="bubble">Halo! Ada yang bisa saya bantu?</div>
-      </div>
-      <div class="chat user">
-        <div class="bubble">Jam buka puskesmas kapan?</div>
-      </div>
-      <div class="chat bot">
-        <img class="icon" src="${chatBot}" alt="Bot Icon" />
-        <div class="bubble">Senin - Jumat, pukul 07.30 sampai 14.00 WIB</div>
-      </div>
-      <div class="chat user">
-        <div class="bubble">Terima kasih!</div>
-      </div>
-    `;
-  }
-
-  connectedCallback() {
-    const chatBox = this.shadowRoot.getElementById("chatBox");
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-}
-
-customElements.define("chat-view", ChatView);
+          `;
+      
+          // Query elemen dan pasang event listener DI SINI
+          this.chatBox = this.shadowRoot.getElementById("chatBox");
+          this.input = this.shadowRoot.querySelector("input");
+          this.button = this.shadowRoot.querySelector("button");
+      
+          this.button.addEventListener("click", () => this.sendMessage());
+          this.input.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") this.sendMessage();
+          });
+        }
+      
+        connectedCallback() {
+          this.scrollToBottom();
+        }
+      
+        scrollToBottom() {
+          this.chatBox.scrollTop = this.chatBox.scrollHeight;
+        }
+      
+        appendMessage(message, sender = "bot") {
+          const chatDiv = document.createElement("div");
+          chatDiv.classList.add("chat", sender);
+          if (sender === "bot") {
+            chatDiv.innerHTML = `
+              <img class="icon" src="${chatBot}" alt="Bot Icon" />
+              <div class="bubble">${message}</div>
+            `;
+          } else {
+            chatDiv.innerHTML = `
+              <div class="bubble">${message}</div>
+            `;
+          }
+          this.chatBox.appendChild(chatDiv);
+          this.scrollToBottom();
+        }
+      
+        async sendMessage() {
+          const message = this.input.value.trim();
+          if (!message) return;
+      
+          console.log("Mengirim pesan:", message);
+          this.appendMessage(message, "user");
+          this.input.value = "";
+          this.input.disabled = true;
+          this.button.disabled = true;
+      
+          try {
+            const response = await fetch("http://127.0.0.1:5001/chat", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ message }),
+            });
+      
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+      
+            const data = await response.json();
+      
+            console.log("Response API:", data);
+      
+            this.appendMessage(data.response || "Maaf, saya tidak mengerti.", "bot");
+          } catch (error) {
+            console.error("Error saat kirim pesan:", error);
+            this.appendMessage("Terjadi kesalahan koneksi. Silakan coba lagi.", "bot");
+          } finally {
+            this.input.disabled = false;
+            this.button.disabled = false;
+            this.input.focus();
+          }
+        }
+      }
+      
+      customElements.define("chat-view", ChatView);
+      
