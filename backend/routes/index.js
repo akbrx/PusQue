@@ -5,6 +5,8 @@ import { verifyToken } from '../middleware/verifiy-token.js';
 import { refreshToken } from '../users/refresh-token.js';
 import { createAntrian, accAntrian, tolakAntrian, selesaiAntrian, getAllAntrian } from '../antrian/antrian-controller.js';
 import { getAntrianById } from '../antrian/antrian-controller.js';
+import { kembalikanAntrian } from '../antrian/antrian-controller.js';
+import { deleteAntrian } from '../antrian/antrian-controller.js';
 
 const router = express.Router();
 
@@ -32,7 +34,8 @@ router.post('/antrian', verifyToken, createAntrian);
 router.patch('/antrian/:id/acc', verifyToken, accAntrian);
 router.patch('/antrian/:id/tolak', verifyToken, tolakAntrian);
 router.patch('/antrian/:id/selesai', verifyToken, selesaiAntrian);
-
+router.patch('/antrian/:id/kembalikan', verifyToken, kembalikanAntrian);
+router.delete('/antrian/:id', verifyToken, deleteAntrian);
 router.get('/antrian/:id', verifyToken, getAntrianById);
 
 export default router;

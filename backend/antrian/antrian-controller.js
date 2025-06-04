@@ -85,3 +85,28 @@ export const getAntrianById = async (req, res) => {
   if (!antrian) return res.status(404).json({ message: "Antrian tidak ditemukan" });
   res.json(antrian);
 };
+
+// Hapus antrian (hanya untuk admin)
+export const kembalikanAntrian = async (req, res) => {
+  try {
+    const id = req.params.id;
+    await Antrian.update(
+      { status: 'menunggu acc admin' },
+      { where: { id } }
+    );
+    res.json({ message: 'Antrian berhasil dikembalikan ke menunggu acc admin' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Hapus antrian (hanya untuk admin)
+export const deleteAntrian = async (req, res) => {
+  try {
+    const id = req.params.id;
+    await Antrian.destroy({ where: { id } });
+    res.json({ message: 'Antrian berhasil dihapus' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
