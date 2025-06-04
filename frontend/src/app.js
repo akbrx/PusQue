@@ -17,39 +17,6 @@ import './pages/loginPage.js';
 import './pages/notFound/notFoundPage.js';
 import './pages/auth/login.js';
 
-const dataPasienDummy = [
-  {
-    id: 1,
-    antrian: 'A001',
-    nama: 'Ahmad Fauzi',
-    tglLahir: '23 Juni 1998',
-    nik: '3174012309980001',
-    fotoKtp: '/image/ktp.jpg',
-    poli: 'Umum',
-    keluhan: ['Batuk', 'Muntah']
-  },
-  {
-    id: 2,
-    antrian: 'A002',
-    nama: 'Rina Kartika',
-    tglLahir: '14 April 1995',
-    nik: '3174021404950002',
-    fotoKtp: '/image/ktp.jpg',
-    poli: 'Gigi',
-    keluhan: ['Sakit gigi']
-  },
-  {
-    id: 3,
-    antrian: 'A003',
-    nama: 'Bagas Saputra',
-    tglLahir: '10 Oktober 1990',
-    nik: '3174031010900003',
-    fotoKtp: '/image/ktp.jpg',
-    poli: 'Anak',
-    keluhan: ['Demam', 'Pilek']
-  }
-];
-
 window.PasienPerBulan = [
   { bulan: "Januari", jumlah: 120 },
   { bulan: "Februari", jumlah: 95 },
@@ -123,13 +90,31 @@ function router() {
 
   else if (hash === "#/dokter" && role === "dokter") {
     const listView = document.createElement("pasien-list-view");
-    listView.dataPasien = dataPasienDummy;
+    // Fetch data dari backend
+    fetch('http://localhost:5000/antrian', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        listView.dataPasien = data;
+      })
+      .catch(err => {
+        listView.innerHTML = `<p class="text-danger">Gagal memuat data pasien</p>`;
+        console.error(err);
+      });
     app.appendChild(listView);
   }
 
   else if (hash === "#/pengajuan" && role === "admin") {
     const adminList = document.createElement("admin-pengajuan-list");
-    adminList.dataPasien = dataPasienDummy;
+    // Fetch data dari backend
+    fetch('http://localhost:5000/antrian', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        adminList.dataPasien = data;
+      })
+      .catch(err => {
+        adminList.innerHTML = `<p class="text-danger">Gagal memuat data antrian</p>`;
+        console.error(err);
+      });
     app.appendChild(adminList);
   }
 
