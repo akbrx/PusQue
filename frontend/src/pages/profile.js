@@ -3,6 +3,20 @@ class ProfileView extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+  }
+
+  async connectedCallback() {
+    // Fetch data user yang sedang login
+    let user = {};
+    try {
+      const res = await fetch('http://localhost:5000/user/me', { credentials: 'include' });
+      if (!res.ok) throw new Error('Gagal mengambil data user');
+      user = await res.json();
+    } catch (err) {
+      user = { name: '-', nik: '-', tanggalLahir: '-', domisili: '-', fotoKtp: '' };
+      console.error(err);
+    }
+
     this.shadowRoot.innerHTML = `
       <style>
         :host {
@@ -106,24 +120,24 @@ class ProfileView extends HTMLElement {
         <div class="right-profile">
           <div class="info-line-nama">
             <span class="label">Nama :</span> 
-            <h3 class="nama">Akhmad</h3>
+            <h3 class="nama">${user.name || '-'}</h3>
           </div>
           <hr />
           <div class="info-line">
             <span class="label">NIK </span> 
-            <p>: 0909090909090909</p>
+            <p>: ${user.nik || '-'}</p>
           </div>
           <div class="info-line">
             <span class="label">Tanggal Lahir </span> 
-            <p>: 09 Mei 2000</p>
+            <p>: ${user.tanggalLahir || '-'}</p>
           </div>
           <div class="info-line">
             <span class="label">Domisili</span> 
-            <p>: Jakarta</p>
+            <p>: ${user.domisili || '-'}</p>
           </div>
           <div class="info-line">
             <span class="label">KTP</span>
-            <img class="ktp-img" src="${ktpimg}" alt="KTP" />
+            <img class="ktp-img" src="${user.fotoKtp ? `http://localhost:5000/uploads/ktp/${user.fotoKtp}` : ktpimg}" alt="KTP" />
           </div>
         </div>
       </div>

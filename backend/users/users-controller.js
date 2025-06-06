@@ -118,3 +118,10 @@ export const Logout = async (req, res) => {
     res.clearCookie('refreshToken');
     res.sendStatus(200);
 }
+
+// backend/users/users-controller.js
+export const getMe = async (req, res) => {
+  const user = await Users.findByPk(req.userId); // pastikan req.userId diisi oleh middleware auth
+  if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
+  res.json(user);
+};

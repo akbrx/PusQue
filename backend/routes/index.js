@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { getUsers, Register, Login, Logout } from '../users/users-controller.js';
+import { getUsers, Register, Login, Logout, getMe } from '../users/users-controller.js';
 import { verifyToken } from '../middleware/verifiy-token.js';
 import { refreshToken } from '../users/refresh-token.js';
 import { getAllAntrian } from '../antrian/antrian-controller.js';
@@ -29,6 +29,7 @@ router.post('/users', upload.single('fotoKtp'), Register);
 router.post('/login', Login);
 router.get('/token', refreshToken);
 router.delete('/logout', Logout);
+router.get('/user/me', verifyToken, getMe); 
 
 // Antrian routes
 router.get('/antrian', verifyToken, getAllAntrian);
