@@ -10,7 +10,6 @@ class AntrianPuskesmas extends HTMLElement {
   async connectedCallback() {
     try {
       const res = await fetch('http://localhost:5000/antrian/user', { credentials: 'include' });
-      if (!res.ok) throw new Error('Gagal mengambil data antrian');
       const data = await res.json();
       this._antrian = data;
       this._fetchError = false;
