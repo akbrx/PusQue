@@ -3,13 +3,37 @@ class AntrianPuskesmas extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this._antrian = null;
+    this._fetchError = false;
   }
 
-  connectedCallback() {
+  async connectedCallback() {
+    try {
+      const res = await fetch('http://localhost:5000/antrian/user', { credentials: 'include' });
+      if (!res.ok) throw new Error('Gagal mengambil data antrian');
+      const data = await res.json();
+      this._antrian = data;
+      this._fetchError = false;
+    } catch (err) {
+      this._antrian = null;
+      this._fetchError = true;
+    }
     this.render();
   }
 
   render() {
+    let nomorAntrian = '-';
+    let poliList = [];
+    if (this._antrian) {
+      nomorAntrian = this._antrian.queue_number || '-';
+      // Jika poli string, jadikan array
+      if (Array.isArray(this._antrian.poli)) {
+        poliList = this._antrian.poli;
+      } else if (this._antrian.poli) {
+        poliList = [this._antrian.poli];
+      }
+    }
+
     this.shadowRoot.innerHTML = `
       <style>
         * {
@@ -111,7 +135,6 @@ class AntrianPuskesmas extends HTMLElement {
           }
         }
       </style>
-
       <div class="container-antri">
         <div class="alert">
           Waktu yang tercantum bersifat estimasi dan dapat berubah sewaktu-waktu, baik lebih awal maupun lebih lambat, tergantung situasi dan kondisi yang terjadi.
@@ -121,17 +144,23 @@ class AntrianPuskesmas extends HTMLElement {
           <img src="${imgpuskes}" alt="Puskesmas">
           <div class="antrian-box">
             <h3>Antrian Anda :</h3>
-            <div class="kode">A-507</div>
-            <div class="box-estimasi">
-              <div class="label">
-                <p>Estimasi Masuk</p>
-                <h3>07:55</h3>
-              </div>
-              <div class="label">
-                <p>Estimasi Keluar</p>
-                <h3>08:08</h3>
-              </div>
-            </div>
+            ${
+              this._fetchError
+                ? `<div class="kode text-danger">Gagal mengambil data antrian.</div>`
+                : this._antrian
+                  ? `<div class="kode">${nomorAntrian}</div>
+                    <div class="box-estimasi">
+                      <div class="label">
+                        <p>Estimasi Masuk</p>
+                        <h3>07:55</h3>
+                      </div>
+                      <div class="label">
+                        <p>Estimasi Keluar</p>
+                        <h3>08:08</h3>
+                      </div>
+                    </div>`
+                  : `<div class="kode text-secondary">Anda belum memiliki antrian aktif.</div>`
+            }
           </div>
         </div>
 

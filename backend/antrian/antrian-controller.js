@@ -1,5 +1,7 @@
 import Antrian from "./antrian-model.js";
 import Users from "../users/user-model.js";
+import sequelize from "sequelize";
+import { Op } from "sequelize";
 
 // Buat antrian baru
 export const createAntrian = async (req, res) => {
@@ -98,8 +100,25 @@ export const selesaiAntrian = async (req, res) => {
   const antrian = await Antrian.findByPk(id);
   if (!antrian) return res.status(404).json({ message: "Antrian tidak ditemukan" });
   if (antrian.status !== 'dalam antrian') return res.status(400).json({ message: "Antrian belum di-ACC admin atau sudah selesai/ditolak" });
+
+  const currentQueue = antrian.queue_number;
+  const currentPoli = antrian.poli;
+
   antrian.status = 'selesai';
   await antrian.save();
+
+  // mengubah queue_number antrian berikutnya
+  await Antrian.update(
+    { queue_number: sequelize.literal('queue_number - 1') },
+    {
+      where: {
+        poli: currentPoli,
+        status: 'dalam antrian',
+        queue_number: { [Op.gt]: currentQueue }
+      }
+    }
+  );
+
   res.json({ message: "Antrian selesai", antrian });
 };
 
@@ -142,6 +161,19 @@ export const deleteAntrian = async (req, res) => {
     const id = req.params.id;
     await Antrian.destroy({ where: { id } });
     res.json({ message: 'Antrian berhasil dihapus' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getAntrianUser = async (req, res) => {
+  try {
+    console.log('userId dari token:', req.userId);
+    const antrian = await Antrian.findOne({
+      where: { userId: req.userId, status: 'dalam antrian' }
+    });
+    if (!antrian) return res.status(404).json({ message: "Antrian tidak ditemukan" });
+    res.json(antrian);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
