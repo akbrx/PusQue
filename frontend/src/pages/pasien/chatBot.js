@@ -133,9 +133,25 @@ class ChatView extends HTMLElement {
             height : 90vh;
           }
         }
+        .back-button {
+          display: inline-block;
+          color: #2979ff;
+          text-decoration: none;
+          padding: 1rem;
+          font-size: 1rem;
+          font-weight: bold;
+        }
+        
+        .back-button:hover {
+          text-decoration: underline;
+          color: #004ecb;
+        }
+        
       </style>
 
+     
             <div class="container-chatbot">
+            <a class="back-button" href="#/">&#8592; Kembali</a>
               <div class="main-content">
                 <div class="logo-wrapper">
                   <img class="logo" src="${logoPusQue}" alt="Logo PusQue" />

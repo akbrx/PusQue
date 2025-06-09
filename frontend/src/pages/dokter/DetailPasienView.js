@@ -25,6 +25,7 @@ class DetailPasienView extends HTMLElement {
 
       this.innerHTML = `
         <section class="container py-5">
+        <a class="back-button" href="#/dokter">&#8592; Kembali</a>
         <h2 class="mb-4">Detail Pasien</h2>
         
         <div class="card shadow-sm">

@@ -133,8 +133,23 @@ class AntrianPuskesmas extends HTMLElement {
             grid-template-columns: 1fr;
           }
         }
+
+        .back-button {
+          display: inline-block;
+          color: #2979ff;
+          text-decoration: none;
+          padding: 1rem;
+          font-size: 1rem;
+          font-weight: bold;
+        }
+        
+        .back-button:hover {
+          text-decoration: underline;
+          color: #004ecb;
+        }
       </style>
       <div class="container-antri">
+      <a class="back-button" href="#/">&#8592; Kembali</a>
         <div class="alert">
           Waktu yang tercantum bersifat estimasi dan dapat berubah sewaktu-waktu, baik lebih awal maupun lebih lambat, tergantung situasi dan kondisi yang terjadi.
         </div>

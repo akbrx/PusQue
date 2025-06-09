@@ -62,6 +62,7 @@ class AdminDetailPengajuan extends HTMLElement {
 
     this.innerHTML = `
       <section class="container py-5">
+      <a class="back-button" href="#/pengajuan">&#8592; Kembali</a>
         <h2 class="mb-4">Detail Pasien</h2>
         <div class="card shadow-sm mx-4 mt-4">
           <div class="card-body">

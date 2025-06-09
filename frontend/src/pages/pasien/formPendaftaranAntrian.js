@@ -116,8 +116,23 @@ class DaftarAntrianForm extends HTMLElement {
           border-radius: 6px;
           cursor: pointer;
         }
+
+        .back-button {
+          display: inline-block;
+          color: #2979ff;
+          text-decoration: none;
+          padding: 1rem;
+          font-size: 1rem;
+          font-weight: bold;
+        }
+        
+        .back-button:hover {
+          text-decoration: underline;
+          color: #004ecb;
+        }
       </style>
       <form class="container-daftar">
+      <a class="back-button" href="#/">&#8592; Kembali</a>
         <h2>Daftar Antrian</h2>
         <input type="date" name="tanggal" />
 
