@@ -141,6 +141,7 @@ class DaftarAntrianForm extends HTMLElement {
           <label><input type="radio" name="poli" value="umum" checked /> Poli Umum</label>
           <label><input type="radio" name="poli" value="gigi" /> Poli Gigi</label>
           <label><input type="radio" name="poli" value="anak" /> Poli Anak</label>
+          <label><input type="radio" name="poli" value="kandungan" /> Poli Kandungan</label>
         </div>
 
         <div>
