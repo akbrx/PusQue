@@ -1,5 +1,6 @@
 import heroImg from "../assets/images/bennerHome.png";
 import bennerImg from "../assets/images/benner.jpg";
+import chatBot from "../assets/icons/chatBot.png";
 class PusquePage extends HTMLElement {
   constructor() {
     super();
@@ -211,6 +212,11 @@ class PusquePage extends HTMLElement {
           z-index: 9999;     /* agar di atas elemen lain */
           transition: background-color 0.3s ease;
         }
+
+        .chat-button img {
+          width: 40px;
+          height: 40px;
+        }
         
         .chat-button:hover {
           background-color: #0056b3;
@@ -231,7 +237,7 @@ class PusquePage extends HTMLElement {
             <div class="hero-text">
               <h2>PusQue</h2>
               <p>PusQue hadir untuk memudahkan Anda dalam mengakses layanan puskesmas dengan lebih cepat dan praktis. Melalui sistem ini, Anda dapat melakukan pendaftaran secara online dan mengambil nomor antrian tanpa harus menunggu lama di lokasi. Silakan gunakan menu yang tersedia untuk memulai.</p>
-              <button>Daftar Antrean</button>
+              <a href="#/daftar"><button>Daftar Antrean</button></a>
             </div>
             <img src="${heroImg}" alt="Antrian" class="hero-img" />
           </div>
@@ -343,9 +349,9 @@ class PusquePage extends HTMLElement {
         </section>
       </div>
 
-      <button class="chat-button">Chat</button>
-
-  
+      <a href="#/chatbot"><button class="chat-button"><img src="${chatBot}" alt="Bot Icon" /></button></a>
+      
+ 
       <footer class="footer">© 2025 PusQue</footer>
     `;
   }
