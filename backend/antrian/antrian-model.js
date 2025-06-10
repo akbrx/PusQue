@@ -9,7 +9,7 @@ const Antrian = db.define('antrian', {
     primaryKey: true
   },
   poli: {
-    type: DataTypes.ENUM('umum', 'gigi', 'anak'),
+    type: DataTypes.ENUM('umum', 'gigi', 'anak', 'kandungan'),
     allowNull: false
   },
   keluhan: {
