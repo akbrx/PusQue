@@ -42,6 +42,10 @@ export function renderRegisterForm(onRegisterSuccess) {
               </div>
               <button type="submit" class="btn btn-primary w-100 rounded submit px-3">Register</button>
               <div class="message mt-2 text-center" id="regMessage"></div>
+              <div id="loading-spinner" style="display:none;" class="text-center mb-2">
+                <div class="spinner"></div>
+                <div style="font-size: 0.9em;">Memeriksa KTP...</div>
+              </div>
               <p class="mt-3 text-center">
                 Sudah punya akun? <a href="#/login">Login di sini</a>
               </p>
@@ -59,8 +63,11 @@ export function renderRegisterForm(onRegisterSuccess) {
   `;
 
   const form = document.getElementById('registerForm');
+  const loadingSpinner = document.getElementById('loading-spinner');
+
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
+    loadingSpinner.style.display = 'block'; // Tampilkan spinner
     const name = document.getElementById('name').value.trim();
     const nik = document.getElementById('nik').value.trim();
     const tanggalLahir = document.getElementById('tanggalLahir').value;
@@ -72,40 +79,81 @@ export function renderRegisterForm(onRegisterSuccess) {
 
     // FormData
     const formData = new FormData();
-    formData.append('name', name);
-    formData.append('nik', nik);
-    formData.append('tanggalLahir', tanggalLahir);
-    formData.append('domisili', domisili);
-    formData.append('password', password);
-    formData.append('confPassword', confPassword);
-    formData.append('fotoKtp', document.getElementById('fotoKtp').files[0]);
+    formData.append('image', document.getElementById('fotoKtp').files[0]);
 
     try {
-      const res = await fetch('http://localhost:5000/users', {
+      const res = await fetch('http://localhost:5002/validate-nik', {
         method: 'POST',
         body: formData
       });
-      const data = await res.json();
-      if (res.ok) {
-        messageDiv.classList.remove('text-danger');
-        messageDiv.classList.add('text-success');
-        messageDiv.textContent = 'Register berhasil! Silakan login.';
-        setTimeout(() => {
-          if (typeof onRegisterSuccess === 'function') {
-            onRegisterSuccess();
-          } else {
-            window.location.hash = "#/login";
-          }
-        }, 1500);
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        data = { message: 'Gagal membaca response dari server OCR.' };
+      }
+      if (res.ok && data.message === "NIK valid") {
+        // lanjutkan proses register
+        const registerData = new FormData();
+        registerData.append('name', name);
+        registerData.append('nik', nik);
+        registerData.append('tanggalLahir', tanggalLahir);
+        registerData.append('domisili', domisili);
+        registerData.append('password', password);
+        registerData.append('confPassword', confPassword);
+        registerData.append('fotoKtp', document.getElementById('fotoKtp').files[0]);
+
+        const registerRes = await fetch('http://localhost:5000/users', {
+          method: 'POST',
+          body: registerData
+        });
+        const registerDataResponse = await registerRes.json();
+        if (registerRes.ok) {
+          messageDiv.classList.remove('text-danger');
+          messageDiv.classList.add('text-success');
+          messageDiv.textContent = 'Register berhasil! Silakan login.';
+          setTimeout(() => {
+            if (typeof onRegisterSuccess === 'function') {
+              onRegisterSuccess();
+            } else {
+              window.location.hash = "#/login";
+            }
+          }, 1500);
+        } else {
+          messageDiv.classList.remove('text-success');
+          messageDiv.classList.add('text-danger');
+          messageDiv.textContent = registerDataResponse.message || 'Register gagal';
+        }
       } else {
         messageDiv.classList.remove('text-success');
         messageDiv.classList.add('text-danger');
-        messageDiv.textContent = data.message || 'Register gagal';
+        messageDiv.textContent = data.message || 'NIK tidak valid';
       }
     } catch (err) {
       messageDiv.classList.remove('text-success');
       messageDiv.classList.add('text-danger');
-      messageDiv.textContent = 'Terjadi error koneksi';
+      messageDiv.textContent = 'Terjadi error koneksi ke server OCR';
+    } finally {
+      loadingSpinner.style.display = 'none'; // Sembunyikan spinner
     }
   });
+
+  // Tambahkan CSS spinner ke halaman
+  const spinnerStyle = document.createElement('style');
+  spinnerStyle.innerHTML = `
+  .spinner {
+    margin: 0 auto 8px auto;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg);}
+    100% { transform: rotate(360deg);}
+  }
+  `;
+  document.head.appendChild(spinnerStyle);
 }
