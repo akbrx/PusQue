@@ -178,3 +178,23 @@ export const getAntrianUser = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const simpanPrediksiAntrian = async (req, res) => {
+  const { id } = req.params;
+  const { entryMinutes, durationMinutes } = req.body;
+
+  try {
+    const antrian = await Antrian.findByPk(id);
+    if (!antrian) return res.status(404).json({ message: "Antrian tidak ditemukan" });
+
+    antrian.estimasi_masuk = entryMinutes;
+    antrian.durasi_periksa = durationMinutes;
+
+    await antrian.save();
+
+    res.json({ message: "Prediksi berhasil disimpan", antrian });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Gagal menyimpan prediksi" });
+  }
+};

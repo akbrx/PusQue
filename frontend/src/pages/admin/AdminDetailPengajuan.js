@@ -12,6 +12,7 @@ class AdminDetailPengajuan extends HTMLElement {
   }
 
   async fetchDetailAntrian(id) {
+    console.log("ID dari URL:", id);
     try {
       // Ambil semua antrian
       const resAll = await fetch('http://localhost:5000/antrian', {
@@ -95,6 +96,8 @@ class AdminDetailPengajuan extends HTMLElement {
                   <td style="padding-left: 35rem;">${this._pasien.poli}</td>
                 </tr>
                 <tr>
+  
+                <tr>
                   <th scope="row">Keluhan</th>
                   <td style="padding-left: 35rem;">
                     <ul class="mb-0">
@@ -146,21 +149,165 @@ class AdminDetailPengajuan extends HTMLElement {
     if (!confirm('Yakin ingin menyetujui antrian ini?')) return;
     try {
       const id = window.location.hash.split('/')[2];
+  
+      // 🔍 Ambil data detail antrian dulu
+      const resDetail = await fetch(`http://localhost:5000/antrian/${id}`, {
+        credentials: 'include'
+      });
+      const antrianData = await resDetail.json();
+  
+      // 🔮 Jalankan prediksi durasi dan jam masuk
+      const prediction = await this.predictDurations(antrianData);
+  
+      if (prediction) {
+        console.log("✅ Hasil Prediksi:");
+        console.log("Estimasi Masuk (menit):", prediction.entryMinutes);
+        console.log("Estimasi Durasi (menit):", prediction.durationMinutes);
+  
+        // Simpan ke variabel global (opsional)
+        this.predictedEntry = prediction.entryMinutes;
+        this.predictedDuration = prediction.durationMinutes;
+  
+        // PATCH hasil prediksi ke backend
+        await fetch(`http://localhost:5000/antrian/${id}/prediksi`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            entryMinutes: prediction.entryMinutes,
+            durationMinutes: prediction.durationMinutes
+          })
+        });
+      }
+  
+      // ✅ Kirim permintaan ACC
       const res = await fetch(`http://localhost:5000/antrian/${id}/acc`, {
         method: 'PATCH',
         credentials: 'include'
       });
       const data = await res.json();
+  
       if (res.ok) {
         alert('Antrian berhasil disetujui.');
         window.location.hash = '#/pengajuan';
       } else {
         alert(data.message || 'Gagal menyetujui antrian');
       }
+  
     } catch (err) {
+      console.error("❌ Error saat menyetujui antrian:", err.message);
       alert('Terjadi error saat menyetujui antrian');
     }
   }
+  
+  
+
+  async predictDurations(antrianData) {
+    try {
+      const createdAt = new Date(antrianData.createdAt);
+      const year = createdAt.getFullYear();
+      const month = createdAt.getMonth() + 1;
+      const day = createdAt.getDate();
+      const dayOfWeek = createdAt.getDay(); // 0 = Minggu, 1 = Senin, dst
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 ? 1 : 0;
+      const quarter = Math.floor((month - 1) / 3) + 1;
+  
+      const poliMap = {
+        "Poli_Gigi": [0.05, 0, 0, 0],
+        "Poli_KIA_KB": [0, 0.05, 0, 0],
+        "Poli_Lansia": [0, 0, 0.05, 0],
+        "Poli_Umum": [0, 0, 0, 0.65],
+      };
+      const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+      const poliKey = `Poli_${capitalize(antrianData.poli)}`;
+      const poliInput = poliMap[poliKey] || [0, 0, 0, 0];
+
+  
+      const inputEntry = {
+        input: {
+          TotalDelayTime: 151.22,
+          TriageToProviderStartTime: 49.53,
+          TestsToDischargeTime: 44.88,
+          ProviderEndToTestsCompleteTime: 38.27,
+          Department_Poli_Gigi: poliInput[0],
+          Department_Poli_KIA_KB: poliInput[1],
+          Department_Poli_Lansia: poliInput[2],
+          Department_Poli_Umum: poliInput[3],
+          ProvidersOnShift: 4,
+          NursesOnShift: 15,
+          StaffToPatientRatio: 0.3,
+          Year: year,
+          Month: month,
+          Day: day,
+          DayOfWeek: dayOfWeek,
+          IsWeekend: isWeekend,
+          Quarter: quarter
+        }
+      };
+  
+      const inputDuration = {
+        input: {
+          FacilityOccupancyRate: 0.63,
+          ProvidersOnShift: 4,
+          NursesOnShift: 15,
+          StaffToPatientRatio: 0.3,
+          IsRegistered: 0.0,
+          IsOnlineBooking: 1.0,
+          Year: year,
+          Day: day,
+          IsWeekend: isWeekend,
+          Quarter: quarter,
+          ArrivalDelayTime: -10.025,
+          RegistrationWaitTimeTime: 5.982510967,
+          RegistrationToCheckInTime: -2.9860069,
+          CheckInToNurseTime: 3.0696716915,
+          NurseToTriageCompleteTime: 3.949069575,
+          TriageToProviderStartTime: 38.2,
+          ConsultationDurationTime: 17.958333335,
+          ProviderEndToTestsCompleteTime: 33.325,
+          TestsToDischargeTime: 22.166666665,
+          TotalTimeInHospital: 156.93333335,
+          TotalDelayTime: 144.8583333,
+          ArrivalHour: 12.0,
+          ArrivalDayOfWeek: dayOfWeek,
+          ArrivalMonth: month,
+          RegistrationTime_missing: 1.0,
+          TimeFromArrivalToNurse: 319.4,
+          TimeFromNurseToDoctor: 216.35,
+          AppointmentHour: 12.0,
+          VisitDayOfWeek: dayOfWeek,
+          VisitMonth: month,
+          VisitYear: year,
+          VisitDayOfMonth: day
+        }
+      };
+  
+      const [resEntry, resDuration] = await Promise.all([
+        fetch('http://127.0.0.1:3000/predict-entry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(inputEntry)
+        }).then(res => res.json()),
+  
+        fetch('http://127.0.0.1:3000/predict-duration', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(inputDuration)
+        }).then(res => res.json())
+      ]);
+  
+      return {
+        entryMinutes: resEntry.prediction_minutes,
+        durationMinutes: resDuration.prediction_minutes
+      };
+    } catch (err) {
+      console.error("❌ Error during prediction:", err.message);
+      return null;
+    }
+  }
+  
 }
 
 if (!customElements.get('admin-detail-pengajuan')) {

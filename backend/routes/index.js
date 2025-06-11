@@ -10,6 +10,7 @@ import { kembalikanAntrian } from '../antrian/antrian-controller.js';
 import { deleteAntrian } from '../antrian/antrian-controller.js';
 import { mundurkanAntrian } from '../antrian/antrian-controller.js';
 import { getAntrianUser } from '../antrian/antrian-controller.js';
+import { simpanPrediksiAntrian } from '../antrian/antrian-controller.js';
 
 const router = express.Router();
 
@@ -43,5 +44,6 @@ router.delete('/antrian/:id', verifyToken, deleteAntrian);
 router.get('/antrian/user', verifyToken, getAntrianUser);
 router.get('/antrian/:id', verifyToken, getAntrianById);
 router.patch('/antrian/:id/mundur', verifyToken, mundurkanAntrian);
+router.patch('/antrian/:id/prediksi', verifyToken, simpanPrediksiAntrian);
 
 export default router;

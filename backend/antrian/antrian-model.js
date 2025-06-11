@@ -34,6 +34,15 @@ const Antrian = db.define('antrian', {
     allowNull: false,
     defaultValue: 0
   },
+  estimasi_masuk: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  durasi_periksa: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  
 }, {
   freezeTableName: true,
   timestamps: true // createdAt & updatedAt

@@ -4,33 +4,102 @@ class AntrianPuskesmas extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
     this._antrian = null;
+    this._antrianPoli = {};
     this._fetchError = false;
   }
 
   async connectedCallback() {
     try {
-      const res = await fetch('http://localhost:5000/antrian/user', { credentials: 'include' });
-      const data = await res.json();
-      this._antrian = data;
-      this._fetchError = false;
+      const [resUser, resAll] = await Promise.all([
+        fetch('http://localhost:5000/antrian/user', { credentials: 'include' }),
+        fetch('http://localhost:5000/antrian', { credentials: 'include' })
+      ]);
+      this._antrian = await resUser.json();
+      this._semuaAntrian = await resAll.json();
     } catch (err) {
-      this._antrian = null;
       this._fetchError = true;
     }
     this.render();
   }
 
+  formatTimeFromMinutes(minutes) {
+    const baseHour = 8;
+    const totalMinutes = baseHour * 60 + minutes;
+    const jam = Math.floor(totalMinutes / 60);
+    const menit = Math.floor(totalMinutes % 60);
+    return `${jam.toString().padStart(2, '0')}:${menit.toString().padStart(2, '0')}`;
+  }
+
+
+  hitungEstimasi(antrianUser) {
+    if (!antrianUser || !this._semuaAntrian.length) return { masuk: '-', keluar: '-' };
+
+    const poli = antrianUser.poli;
+    const antrianPoli = this._semuaAntrian
+      .filter(a => a.poli === poli && a.status === 'dalam antrian')
+      .sort((a, b) => a.queue_number - b.queue_number);
+
+    let estimasiWaktu = 0; // menit, mulai dari jam 08.00
+    let waktuMasuk = 0;
+    let waktuKeluar = 0;
+
+    for (const pasien of antrianPoli) {
+      const masuk = estimasiWaktu + (pasien.estimasi_masuk || 0);
+      const keluar = masuk + (pasien.durasi_periksa || 0);
+
+      if (pasien.id === antrianUser.id) {
+        waktuMasuk = masuk;
+        waktuKeluar = keluar;
+        break;
+      }
+
+      estimasiWaktu = keluar;
+    }
+
+    return {
+      masuk: this.formatTimeFromMinutes(waktuMasuk),
+      keluar: this.formatTimeFromMinutes(waktuKeluar),
+    };
+  }
+
+  getAntrianPertamaPerPoli(poli) {
+    const kodeAwal = {
+      umum: 'A',
+      gigi: 'B',
+      anak: 'C',
+      kandungan: 'D'
+    };
+  
+    const poliQueue = this._semuaAntrian
+      .filter(a => a.poli === poli && a.status === 'dalam antrian')
+      .sort((a, b) => a.queue_number - b.queue_number);
+  
+    const pertama = poliQueue[0];
+    return pertama ? `${kodeAwal[poli]}-${pertama.queue_number}` : '-';
+  }
+
+  getKodeAntrianPasienSaatIni() {
+    const kodeAwal = {
+      umum: 'A',
+      gigi: 'B',
+      anak: 'C',
+      kandungan: 'D'
+    };
+  
+    if (!this._antrian || !this._antrian.poli || !this._antrian.queue_number) return '-';
+  
+    const huruf = kodeAwal[this._antrian.poli] || '?';
+    return `${huruf}-${this._antrian.queue_number}`;
+  }
+
+
   render() {
     let nomorAntrian = '-';
-    let poliList = [];
-    if (this._antrian) {
-      nomorAntrian = this._antrian.queue_number || '-';
-      // Jika poli string, jadikan array
-      if (Array.isArray(this._antrian.poli)) {
-        poliList = this._antrian.poli;
-      } else if (this._antrian.poli) {
-        poliList = [this._antrian.poli];
-      }
+    let estimasi = { masuk: '-', keluar: '-' };
+
+    if (this._antrian && this._antrian.queue_number) {
+      nomorAntrian = `${this._antrian.queue_number}`;
+      estimasi = this.hitungEstimasi(this._antrian);
     }
 
     this.shadowRoot.innerHTML = `
@@ -162,15 +231,15 @@ class AntrianPuskesmas extends HTMLElement {
               this._fetchError
                 ? `<div class="kode text-danger">Gagal mengambil data antrian.</div>`
                 : this._antrian
-                  ? `<div class="kode">${nomorAntrian}</div>
+                  ? `<div class="kode">${this.getKodeAntrianPasienSaatIni()}</div>
                     <div class="box-estimasi">
                       <div class="label">
-                        <p>Estimasi Masuk</p>
-                        <h3>07:55</h3>
+                      <p>Estimasi Masuk</p>
+                      <h2>${estimasi.masuk}</h2>
                       </div>
                       <div class="label">
-                        <p>Estimasi Keluar</p>
-                        <h3>08:08</h3>
+                      <p>Estimasi Keluar</p>
+                      <h2>${estimasi.keluar}</h2>
                       </div>
                     </div>`
                   : `<div class="kode text-secondary">Anda belum memiliki antrian aktif.</div>`
@@ -179,22 +248,10 @@ class AntrianPuskesmas extends HTMLElement {
         </div>
 
         <div class="kode-poli">
-          <div class="poli">
-            <h3>Poli Umum :</h3>
-            <div class="poli-box">A-507</div>
-          </div>
-          <div class="poli">
-            <h3>Poli Gigi :</h3>
-            <div class="poli-box">B-507</div>
-          </div>
-          <div class="poli">
-            <h3>Poli Anak :</h3>
-            <div class="poli-box">C-507</div>
-          </div>
-          <div class="poli">
-            <h3>Poli Kandungan :</h3>
-            <div class="poli-box">D-507</div>
-          </div>
+          <div class="poli"><h3>Poli Umum :</h3><div class="poli-box">${this.getAntrianPertamaPerPoli('umum')}</div></div>
+          <div class="poli"><h3>Poli Gigi :</h3><div class="poli-box">${this.getAntrianPertamaPerPoli('gigi')}</div></div>
+          <div class="poli"><h3>Poli Anak :</h3><div class="poli-box">${this.getAntrianPertamaPerPoli('anak')}</div></div>
+          <div class="poli"><h3>Poli Kandungan :</h3><div class="poli-box">${this.getAntrianPertamaPerPoli('kandungan')}</div></div>
         </div>
       </div>
     `;
