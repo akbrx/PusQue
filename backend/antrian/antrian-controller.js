@@ -141,7 +141,7 @@ export const getAntrianById = async (req, res) => {
   res.json(antrian);
 };
 
-// Hapus antrian (hanya untuk admin)
+// Kembalikan antrian (hanya untuk admin)
 export const kembalikanAntrian = async (req, res) => {
   try {
     const id = req.params.id;
