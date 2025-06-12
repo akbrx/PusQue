@@ -285,13 +285,13 @@ class AdminDetailPengajuan extends HTMLElement {
       };
   
       const [resEntry, resDuration] = await Promise.all([
-        fetch('http://127.0.0.1:3000/predict-entry', {
+        fetch('https://prediksi-akhmadramedhonjl3858-dgkc9iy9.leapcell.dev/predict-entry', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(inputEntry)
         }).then(res => res.json()),
   
-        fetch('http://127.0.0.1:3000/predict-duration', {
+        fetch('https://prediksi-akhmadramedhonjl3858-dgkc9iy9.leapcell.dev/predict-duration', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(inputDuration)

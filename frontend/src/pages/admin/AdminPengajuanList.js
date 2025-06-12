@@ -96,7 +96,11 @@ class AdminPengajuanList extends HTMLElement {
                         <td>${index + 1}</td>
                         <td>${antrian.user ? antrian.user.name : '-'}</td>
                         <td>${antrian.poli || '-'}
-                        <td>${antrian.status}</td>
+                        <td>
+                          ${antrian.status === 'ditolak'
+                            ? '<span class="badge rounded-pill bg-danger">Ditolak</span>'
+                            : '<span class="badge rounded-pill bg-warning text-dark">Dalam Antrian</span>'}
+                        </td>
                         <td>
                           <div class="d-flex justify-content-center align-items-center">
                             ${antrian.status === 'ditolak' ? `

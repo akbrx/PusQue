@@ -140,35 +140,23 @@ class MyNavbar extends HTMLElement {
         </nav>
       `;
 
-    // Hamburger
-    this.shadowRoot.addEventListener("click", (e) => {
-      if (e.target.closest("#hamburger")) {
-        const menu = this.shadowRoot.getElementById("menu");
-        menu.classList.toggle("show");
-      }
-      // Logout
-      if (e.target.id === "logoutBtn") {
-        localStorage.removeItem('accessToken');
-        window.location.hash = "#/login";
-        this.render();
-      }
-    });
-    // Hamburger toggle
-    this.shadowRoot.querySelector("#hamburger").addEventListener("click", () => {
+      const hamburger = this.shadowRoot.querySelector("#hamburger");
       const menu = this.shadowRoot.querySelector("#menu");
-      menu.classList.toggle("show");
-    });
-
-    // Logout
-    const logoutLink = this.shadowRoot.querySelector("#logout");
-    if (logoutLink) {
-      logoutLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        localStorage.removeItem("userRole");
-        location.hash = "#/";
-        this.render(); // Refresh menu setelah logout
+      const logoutBtn = this.shadowRoot.querySelector("#logoutBtn");
+      
+      hamburger.addEventListener("click", () => {
+        menu.classList.toggle("show");
       });
-    }
+      
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          localStorage.removeItem("userRole");
+          localStorage.removeItem("accessToken");
+          window.location.hash = "#/login";
+          this.render();
+        });
+      }
   }
 }
 

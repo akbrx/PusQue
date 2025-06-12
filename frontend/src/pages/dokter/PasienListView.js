@@ -1,4 +1,5 @@
 class PasienListView extends HTMLElement {
+
   set dataPasien(value) {
     // Simpan semua data untuk kebutuhan filter
     this._allPasien = value.filter(p => p.status === 'dalam antrian');
@@ -35,6 +36,13 @@ class PasienListView extends HTMLElement {
     }
 
     this.innerHTML = `
+    <style>
+    .bg-pink {
+      background-color: #e83e8c !important; /* warna pink bootstrap-ish */
+      color: white;
+    }   
+    </style>
+
       <section class="pasien-container container-xl py-5">
         <h1 class="text-center mb-4">Daftar Pasien</h1>
         <div class="mb-3">
@@ -66,7 +74,19 @@ class PasienListView extends HTMLElement {
                       <td>${index + 1}</td>
                       <td>${pasien.antrian}</td>
                       <td>${pasien.nama}</td>
-                      <td>${pasien.poli}</td>
+                      <td>
+                        ${
+                          pasien.poli === 'umum'
+                            ? '<span class="badge rounded-pill bg-primary">Umum</span>'
+                            : pasien.poli === 'gigi'
+                            ? '<span class="badge rounded-pill bg-secondary">Gigi</span>'
+                            : pasien.poli === 'anak'
+                            ? '<span class="badge rounded-pill bg-info text-dark">Anak</span>'
+                            : pasien.poli === 'kandungan'
+                            ? '<span class="badge rounded-pill bg-pink">Kandungan</span>'
+                            : '-'
+                        }
+                      </td>
                       <td>
                         <div class="d-flex justify-content-center align-items-center">
                           <button class="btn btn-info btn-sm btn-detail me-3" data-id="${pasien.id}">Detail</button>
