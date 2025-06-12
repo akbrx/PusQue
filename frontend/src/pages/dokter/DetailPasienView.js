@@ -30,38 +30,64 @@ class DetailPasienView extends HTMLElement {
         
         <div class="card shadow-sm">
             <div class="card-body">
-            <table class="table">
-            <tbody>
-                <tr>
-                  <th scope="row" style="width: 200px;">Nama</th>
-                  <td style="padding-left: 35rem;">${this._pasien.nama}</td>
-                </tr>
-                <tr>
-                  <th scope="row">No Antrian</th>
-                  <td style="padding-left: 35rem;">${this._pasien.antrian}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Tanggal Lahir</th>
-                  <td style="padding-left: 35rem;">${this._pasien.tglLahir}</td>
-                </tr>
-                <tr>
-                  <th scope="row">NIK</th>
-                  <td style="padding-left: 35rem;">${this._pasien.nik}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Poli</th>
-                  <td style="padding-left: 35rem;">${this._pasien.poli}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Keluhan</th>
-                  <td style="padding-left: 35rem;">
-                    <ul class="mb-0">
-                      ${this._pasien.keluhan.map(k => `<li>${k}</li>`).join('')}
-                    </ul>
-                  </td>
-                </tr>
-              </tbody>
-          </table>
+            <div class="container my-4">
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <th scope="row" class="w-50">Nama</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>:</td>
+                    <td class="text-break">${this._pasien.nama}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">No Antrian</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>:</td>
+                    <td>${this._pasien.antrian}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Tanggal Lahir</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>:</td>
+                    <td>${this._pasien.tglLahir}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" >NIK</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>:</td>
+                    <td class="text-break">${this._pasien.nik}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Poli</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>:</td>
+                    <td>${this._pasien.poli}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Keluhan</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>:</td>
+                    <td>
+                      <ul class="mb-0 ps-3 text-break">
+                        ${this._pasien.keluhan.map(k => `<li>${k}</li>`).join('')}
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           <div class="d-grid gap-2 col-4 ms-auto mt-3">
             <a href="#/dokter" class="btn btn-primary mt-3">Selesai</a>
             <button id="btn-turunkan" class="btn btn-warning mt-2">Turunkan Antrian</button>

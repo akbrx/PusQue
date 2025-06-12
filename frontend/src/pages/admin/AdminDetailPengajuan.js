@@ -70,36 +70,36 @@ class AdminDetailPengajuan extends HTMLElement {
             <table class="table">
               <tbody>
                 <tr>
-                  <th scope="row" style="width: 200px;">Nama</th>
-                  <td style="padding-left: 35rem;">${this._pasien.nama}</td>
+                  <th scope="row" class="w-75">Nama</th>
+                  <td >${this._pasien.nama}</td>
                 </tr>
                 <tr>
                   <th scope="row">No Antrian</th>
-                  <td style="padding-left: 35rem;">${this._pasien.antrian}</td>
+                  <td >${this._pasien.antrian}</td>
                 </tr>
                 <tr>
                   <th scope="row">Tanggal Lahir</th>
-                  <td style="padding-left: 35rem;">${this._pasien.tglLahir}</td>
+                  <td >${this._pasien.tglLahir}</td>
                 </tr>
                 <tr>
                   <th scope="row">NIK</th>
-                  <td style="padding-left: 35rem;">${this._pasien.nik}</td>
+                  <td >${this._pasien.nik}</td>
                 </tr>
                 <tr>
                   <th scope="row">Foto KTP</th>
-                  <td style="padding-left: 35rem;">
-                    <img class="ktp-img" src="${fotoKtpSrc}" alt="KTP" style="max-width:200px;"/>
+                  <td ">
+                    <img class="ktp-img img-fluid" src="${fotoKtpSrc}" alt="KTP""/>
                   </td>
                 </tr>
                 <tr>
                   <th scope="row">Poli</th>
-                  <td style="padding-left: 35rem;">${this._pasien.poli}</td>
+                  <td ">${this._pasien.poli}</td>
                 </tr>
                 <tr>
   
                 <tr>
                   <th scope="row">Keluhan</th>
-                  <td style="padding-left: 35rem;">
+                  <td ">
                     <ul class="mb-0">
                       ${this._pasien.keluhan.map(k => `<li>${k}</li>`).join('')}
                     </ul>
