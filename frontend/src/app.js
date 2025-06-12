@@ -16,21 +16,7 @@ import './pages/admin/AdminBeranda.js';
 import './pages/loginPage.js';
 import './pages/notFound/notFoundPage.js';
 import './pages/auth/login.js';
-
-window.PasienPerBulan = [
-  { bulan: "Januari", jumlah: 120 },
-  { bulan: "Februari", jumlah: 95 },
-  { bulan: "Maret", jumlah: 130 },
-  { bulan: "April", jumlah: 110 },
-  { bulan: "Mei", jumlah: 140 },
-  { bulan: "Juni", jumlah: 100 },
-  { bulan: "Juli", jumlah: 150 },
-  { bulan: "Agustus", jumlah: 125 },
-  { bulan: "September", jumlah: 135 },
-  { bulan: "Oktober", jumlah: 90 },
-  { bulan: "November", jumlah: 115 },
-  { bulan: "Desember", jumlah: 160 }
-];
+import './pages/pasien/feedback-page.js';
 
 function isLoggedIn() {
   // Cek token di localStorage, sesuaikan dengan nama token yang kamu simpan setelah login
@@ -155,6 +141,11 @@ function router() {
   else if (hash === "#/login") {
     const login = document.createElement("login-page");
     app.appendChild(login);
+  }
+
+  else if (hash === "#/feedback" && role === "pasien") {
+    const feedbackPage = document.createElement("feedback-page");
+    app.appendChild(feedbackPage);
   }
 
   else {

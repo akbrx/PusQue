@@ -1,9 +1,19 @@
 class AdminBeranda extends HTMLElement {
-    connectedCallback() {
-      this.render();
+    async connectedCallback() {
+      // Fetch data real dari backend
+      let pasienPerBulan = [];
+      try {
+        const res = await fetch('http://localhost:5000/statistik/pasien-per-bulan', {
+          credentials: 'include' // agar cookie JWT ikut terkirim
+        });
+        pasienPerBulan = await res.json();
+      } catch (err) {
+        pasienPerBulan = [];
+      }
+      this.render(pasienPerBulan);
     }
   
-    render() {
+    render(pasienPerBulan = []) {
       this.innerHTML = `
       <div class="card shadow-sm mx-4 mt-4">
   <div class="card-body px-4">
@@ -36,7 +46,7 @@ class AdminBeranda extends HTMLElement {
                     </tr>
                   </thead>
                   <tbody>
-                    ${window.PasienPerBulan.map(item => `
+                    ${pasienPerBulan.map(item => `
                       <tr>
                         <td>${item.bulan}</td>
                         <td>${item.jumlah}</td>
@@ -54,61 +64,44 @@ class AdminBeranda extends HTMLElement {
 </div>
       `;
   
-      const labels = window.PasienPerBulan.map(item => item.bulan);
-      const dataValues = window.PasienPerBulan.map(item => item.jumlah);
-  
-      const barData = {
-        labels: labels,
-        datasets: [{
-          label: 'Jumlah Pasien',
-          data: dataValues,
-          backgroundColor: '#367AFF',
-          borderRadius: 5
-        }]
-      };
-  
-      const barConfig = {
-        type: 'bar',
-        data: barData,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      };
-  
-      const pieData = {
-        labels: labels,
-        datasets: [{
-          label: 'Jumlah Pasien',
-          data: dataValues
-          // Chart.js will automatically assign default colors if backgroundColor not specified
-        }]
-      };
-  
-      const pieConfig = {
-        type: 'pie',
-        data: pieData,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false // Menyembunyikan legend
-            }
-          }
-        }
-      };
+      const labels = pasienPerBulan.map(item => item.bulan);
+      const dataValues = pasienPerBulan.map(item => item.jumlah);
   
       setTimeout(() => {
         const barCtx = this.querySelector('#barChart').getContext('2d');
         const pieCtx = this.querySelector('#pieChart').getContext('2d');
-        new Chart(barCtx, barConfig);
-        new Chart(pieCtx, pieConfig);
+        new Chart(barCtx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Jumlah Pasien',
+              data: dataValues,
+              backgroundColor: '#367AFF',
+              borderRadius: 5
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+        new Chart(pieCtx, {
+          type: 'pie',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Jumlah Pasien',
+              data: dataValues
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+          }
+        });
       }, 0);
     }
   }
@@ -116,4 +109,3 @@ class AdminBeranda extends HTMLElement {
   if (!customElements.get('admin-beranda')) {
     customElements.define('admin-beranda', AdminBeranda);
   }
-  

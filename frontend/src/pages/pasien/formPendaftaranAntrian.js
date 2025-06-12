@@ -54,7 +54,8 @@ class DaftarAntrianForm extends HTMLElement {
     const keluhanOptions = {
       umum: ['Sakit Kepala', 'Demam', 'Batuk', 'Pilek', 'Lemas', 'Mual', 'Sakit Perut', 'Pusing'],
       gigi: ['Sakit Gigi', 'Gusi Bengkak', 'Tambal Gigi', 'Cabut Gigi', 'Kontrol', 'Pembersihan'],
-      anak: ['Imunisasi', 'Demam Anak', 'Batuk Anak', 'Tumbuh Gigi', 'Kontrol Rutin']
+      anak: ['Imunisasi', 'Demam Anak', 'Batuk Anak', 'Tumbuh Gigi', 'Kontrol Rutin'],
+      kandungan: ['Kontrol kehamilan', 'Sakit Perut', 'Pendarahan', 'Konsultasi KB','Konsultasi Kehamilan']
     };
 
     keluhanContainer.innerHTML = keluhanOptions[selectedPoli]
