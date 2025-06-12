@@ -6,8 +6,9 @@ import router from './routes/index.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import Antrian from './antrian/antrian-model.js'; //idupkan ini jika ingin membuat tabel antrian
-import Users from './users/user-model.js'; //idupkan ini jika ingin membuat tabel users
+//import Antrian from './antrian/antrian-model.js'; //idupkan ini jika ingin membuat tabel antrian
+//import Users from './users/user-model.js'; //idupkan ini jika ingin membuat tabel users
+//import Feedback from './feedback/feedback-model.js';
 
 dotenv.config();
 const app = express();
@@ -15,9 +16,10 @@ const app = express();
 try {
   await db.authenticate();
   console.log('Database connected');
-  await db.sync(); 
-  await Users.sync(); 
-  await Antrian.sync(); 
+  //await db.sync(); 
+  //await Users.sync(); 
+  //await Antrian.sync(); 
+  //await Feedback.sync(); 
 } catch (error) {
   console.log(error);
 }

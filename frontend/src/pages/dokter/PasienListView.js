@@ -44,6 +44,7 @@ class PasienListView extends HTMLElement {
             <option value="umum"${this._selectedPoli === 'umum' ? ' selected' : ''}>Umum</option>
             <option value="gigi"${this._selectedPoli === 'gigi' ? ' selected' : ''}>Gigi</option>
             <option value="anak"${this._selectedPoli === 'anak' ? ' selected' : ''}>Anak</option>
+            <option value="kandungan"${this._selectedPoli === 'kandungan' ? ' selected' : ''}>Kandungan</option>
           </select>
         </div>
         <div class="card shadow-sm">

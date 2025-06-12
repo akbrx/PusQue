@@ -92,6 +92,10 @@ class AntrianPuskesmas extends HTMLElement {
     return `${huruf}-${this._antrian.queue_number}`;
   }
 
+  getJumlahAntrianPerPoli(poli) {
+    if (!this._semuaAntrian) return 0;
+    return this._semuaAntrian.filter(a => a.poli === poli && a.status === 'dalam antrian').length;
+  }
 
   render() {
     let nomorAntrian = '-';
@@ -248,10 +252,30 @@ class AntrianPuskesmas extends HTMLElement {
         </div>
 
         <div class="kode-poli">
-          <div class="poli"><h3>Poli Umum :</h3><div class="poli-box">${this.getAntrianPertamaPerPoli('umum')}</div></div>
-          <div class="poli"><h3>Poli Gigi :</h3><div class="poli-box">${this.getAntrianPertamaPerPoli('gigi')}</div></div>
-          <div class="poli"><h3>Poli Anak :</h3><div class="poli-box">${this.getAntrianPertamaPerPoli('anak')}</div></div>
-          <div class="poli"><h3>Poli Kandungan :</h3><div class="poli-box">${this.getAntrianPertamaPerPoli('kandungan')}</div></div>
+          <div class="poli">
+            <h3>Poli Umum :</h3>
+            <div class="poli-box">
+              ${this.getJumlahAntrianPerPoli('umum')} pasien
+            </div>
+          </div>
+          <div class="poli">
+            <h3>Poli Gigi :</h3>
+            <div class="poli-box">
+              ${this.getJumlahAntrianPerPoli('gigi')} pasien
+            </div>
+          </div>
+          <div class="poli">
+            <h3>Poli Anak :</h3>
+            <div class="poli-box">
+              ${this.getJumlahAntrianPerPoli('anak')} pasien
+            </div>
+          </div>
+          <div class="poli">
+            <h3>Poli Kandungan :</h3>
+            <div class="poli-box">
+              ${this.getJumlahAntrianPerPoli('kandungan')} pasien
+            </div>
+          </div>
         </div>
       </div>
     `;

@@ -47,6 +47,7 @@ class MyNavbar extends HTMLElement {
         menuItems += `
           <li><a href="#/antrian">Antrian</a></li>
           <li><a href="#/daftar">Daftar</a></li>
+          <li><a href="#/feedback">Feedback</a></li>
         `;
       } else if (role === 'admin') {
         menuItems += `

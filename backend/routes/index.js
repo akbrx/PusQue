@@ -11,6 +11,8 @@ import { deleteAntrian } from '../antrian/antrian-controller.js';
 import { mundurkanAntrian } from '../antrian/antrian-controller.js';
 import { getAntrianUser } from '../antrian/antrian-controller.js';
 import { simpanPrediksiAntrian } from '../antrian/antrian-controller.js';
+import { getPasienPerBulan } from '../statistik/statistik-controller.js';
+import { getUserFeedback, createFeedback, getRiwayatAntrianSelesai } from '../feedback/feedback-controller.js';
 
 const router = express.Router();
 
@@ -33,6 +35,9 @@ router.get('/token', refreshToken);
 router.delete('/logout', Logout);
 router.get('/user/me', verifyToken, getMe); 
 
+// Statistik routes
+router.get('/statistik/pasien-per-bulan', verifyToken, getPasienPerBulan);
+
 // Antrian routes
 router.get('/antrian', verifyToken, getAllAntrian);
 router.post('/antrian', verifyToken, createAntrian);
@@ -42,8 +47,13 @@ router.patch('/antrian/:id/selesai', verifyToken, selesaiAntrian);
 router.patch('/antrian/:id/kembalikan', verifyToken, kembalikanAntrian);
 router.delete('/antrian/:id', verifyToken, deleteAntrian);
 router.get('/antrian/user', verifyToken, getAntrianUser);
+router.get('/antrian/riwayat', verifyToken, getRiwayatAntrianSelesai);
 router.get('/antrian/:id', verifyToken, getAntrianById);
 router.patch('/antrian/:id/mundur', verifyToken, mundurkanAntrian);
 router.patch('/antrian/:id/prediksi', verifyToken, simpanPrediksiAntrian);
+
+// Feedback routes
+router.get('/feedback/user', verifyToken, getUserFeedback);
+router.post('/feedback', verifyToken, createFeedback);
 
 export default router;
