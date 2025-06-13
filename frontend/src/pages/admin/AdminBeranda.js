@@ -1,17 +1,16 @@
 class AdminBeranda extends HTMLElement {
-    async connectedCallback() {
-      // Fetch data real dari backend
-      let pasienPerBulan = [];
-      try {
-        const res = await fetch('http://localhost:5000/statistik/pasien-per-bulan', {
-          credentials: 'include' // agar cookie JWT ikut terkirim
-        });
-        pasienPerBulan = await res.json();
-      } catch (err) {
-        pasienPerBulan = [];
-      }
-      this.render(pasienPerBulan);
+  async connectedCallback() {
+    this.innerHTML = `<div>Loading statistik...</div>`;
+    let pasienPerBulan = [];
+    try {
+      const res = await fetch('http://localhost:5000/statistik/pasien-per-bulan', { credentials: 'include' });
+      pasienPerBulan = await res.json();
+    } catch (err) {
+      this.innerHTML = `<div style="color:red;">Gagal memuat data statistik.</div>`;
+      return;
     }
+    this.render(pasienPerBulan);
+  }
   
     render(pasienPerBulan = []) {
       this.innerHTML = `
