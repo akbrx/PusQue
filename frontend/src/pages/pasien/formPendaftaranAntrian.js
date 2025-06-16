@@ -26,6 +26,14 @@ class DaftarAntrianForm extends HTMLElement {
         this.shadowRoot.querySelector('form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            const form = this.shadowRoot.querySelector('form');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const spinner = this.shadowRoot.querySelector('#loading-spinner');
+
+            // Tampilkan loading
+            spinner.style.display = 'block';
+            submitBtn.disabled = true;
+
             // Ambil data keluhan (bisa lebih dari satu)
             const keluhanArr = Array.from(this.shadowRoot.querySelectorAll('input[name="keluhan"]:checked')).map(cb => cb.value);
             const keluhan = keluhanArr.join(', ');
@@ -36,6 +44,8 @@ class DaftarAntrianForm extends HTMLElement {
             // Validasi sederhana: pastikan keluhan dipilih
             if (keluhanArr.length === 0) {
                 alert('Silakan pilih setidaknya satu keluhan.');
+                spinner.style.display = 'none';
+                submitBtn.disabled = false;
                 return;
             }
 
@@ -68,6 +78,9 @@ class DaftarAntrianForm extends HTMLElement {
                     localStorage.removeItem('userRole');
                     window.location.hash = "#/login";
                 }
+            } finally {
+                spinner.style.display = 'none';
+                submitBtn.disabled = false;
             }
         });
     }
@@ -257,6 +270,22 @@ class DaftarAntrianForm extends HTMLElement {
                     text-decoration: underline;
                     color: var(--primary-hover);
                 }
+
+                .spinner {
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid var(--primary-color);
+                    border-radius: 50%;
+                    width: 28px;
+                    height: 28px;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto;
+                }
+                
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                
             </style>
 
             <div class="container-daftar">
@@ -306,6 +335,10 @@ class DaftarAntrianForm extends HTMLElement {
                     </div>
 
                     <button type="submit">Daftar Sekarang</button>
+                    <div id="loading-spinner" style="display:none;" class="text-center mt-2">
+                        <div class="spinner"></div>
+                        <div style="font-size: 0.9em;">Memproses pendaftaran...</div>
+                    </div>
                 </form>
             </div>
         `;

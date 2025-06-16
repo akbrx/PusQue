@@ -98,9 +98,9 @@ async function router() {
         const listView = document.createElement("pasien-list-view");
         app.appendChild(listView);
         try {
-            const res = await authFetch('https://serverpusque-production.up.railway.app/antrian');
+            const res = await authFetch('https://backend-pusque-production.up.railway.app/antrian');
             if (!res.ok) {
-                const errorData = await res.json().catch(() => ({ message: 'Respons non-JSON atau kosong.' }));
+                const errorData = await res.json().catch(() => ({ message: 'SILAHKAN RELOAD HALAMAN' }));
                 throw new Error(errorData.message || `Gagal memuat data pasien: ${res.status} ${res.statusText}`);
             }
             const data = await res.json();
@@ -122,9 +122,9 @@ async function router() {
         app.appendChild(adminList);
         try {
             // URL ini mungkin perlu disesuaikan (misal: '/pengajuan-list')
-            const res = await authFetch('https://serverpusque-production.up.railway.app/pengajuan');
+            const res = await authFetch('https://backend-pusque-production.up.railway.app/pengajuan');
             if (!res.ok) {
-                const errorData = await res.json().catch(() => ({ message: 'Respons non-JSON atau kosong.' }));
+                const errorData = await res.json().catch(() => ({ message: 'SILAHKAN RELOAD HALAMAN' }));
                 throw new Error(errorData.message || `Gagal memuat data pengajuan: ${res.status} ${res.statusText}`);
             }
             const data = await res.json();
@@ -155,9 +155,9 @@ async function router() {
         const detailView = document.createElement("detail-pasien-view");
         app.appendChild(detailView);
         try {
-            const res = await authFetch(`https://serverpusque-production.up.railway.app/antrian/${id}`);
+            const res = await authFetch(`https://backend-pusque-production.up.railway.app/antrian/${id}`);
             if (!res.ok) {
-                const errorData = await res.json().catch(() => ({ message: 'Respons non-JSON atau kosong.' }));
+                const errorData = await res.json().catch(() => ({ message: 'SILAHKAN RELOAD HALAMAN' }));
                 throw new Error(errorData.message || `Pasien tidak ditemukan atau respons server tidak OK: ${res.status} ${res.statusText}`);
             }
             const data = await res.json();

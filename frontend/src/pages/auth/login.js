@@ -26,6 +26,10 @@
                                     <button type="submit" class="form-control btn btn-primary rounded submit px-3">Login</button>
                                 </div>
                                 <div class="message mt-2 text-center" id="message"></div>
+                                <div id="loading-spinner" style="display:none;" class="text-center mt-2">
+                                    <div class="spinner"></div>
+                                    <div style="font-size: 0.9em;">Memproses login...</div>
+                                </div>
                                 <p class="mt-3 text-center">
                                     Belum punya akun? <a href="#/register">Register di sini</a>
                                 </p>
@@ -45,11 +49,17 @@
         var nikInput = document.getElementById('nik');
         var passwordInput = document.getElementById('password');
         var messageDiv = document.getElementById('message');
+        var loadingSpinner = document.getElementById('loading-spinner');
+        var submitBtn = form.querySelector('button[type="submit"]');
+
 
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
+            loadingSpinner.style.display = 'block';
+            submitBtn.disabled = true;
+          
             var nik = nikInput.value.trim();
             var password = passwordInput.value.trim();
             messageDiv.textContent = '';
@@ -115,7 +125,30 @@
                     messageDiv.classList.add('text-danger');
                     messageDiv.textContent = 'Terjadi error koneksi';
                     console.error("[LOGIN] Error koneksi saat login:", err);
+                }) 
+                .finally(() => {
+                    loadingSpinner.style.display = 'none';
+                    submitBtn.disabled = false;
                 });
         });
+
+        // Tambahkan CSS spinner ke halaman
+    const spinnerStyle = document.createElement('style');
+    spinnerStyle.innerHTML = `
+    .spinner {
+        margin: 0 auto 8px auto;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg);}
+        100% { transform: rotate(360deg);}
+    }
+    `;
+    document.head.appendChild(spinnerStyle);
     }
     
