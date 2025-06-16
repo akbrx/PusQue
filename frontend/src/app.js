@@ -195,7 +195,7 @@ async function router() {
         app.appendChild(login);
     }
     // Halaman Feedback Pasien
-    else if (hash === "#/feedback" && role === "pasien") {
+    else if (hash === "#/feedback") {
         const feedbackPage = document.createElement("feedback-page");
         app.appendChild(feedbackPage);
     }

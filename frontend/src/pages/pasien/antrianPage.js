@@ -12,40 +12,53 @@ class AntrianPuskesmas extends HTMLElement {
     }
 
     async connectedCallback() {
-        try {
-            // Menggunakan authFetch dengan URL endpoint yang benar
-            const [resUserAntrian, resAllAntrian] = await Promise.all([
-                authFetch('https://backend-pusque-production.up.railway.app/antrian/user'), // URL ini sudah BENAR
-                authFetch('https://backend-pusque-production.up.railway.app/antrian') // URL ini juga BENAR
-            ]);
+    try {
+        const token = localStorage.getItem('accessToken');
 
-            // Pastikan respons OK sebelum parsing JSON
-            if (!resUserAntrian.ok) {
-                const errorData = await resUserAntrian.json().catch(() => ({ message: 'Respons non-JSON atau kosong.' }));
-                throw new Error(errorData.message || 'Gagal memuat antrian user: Respons server tidak OK.');
-            }
-            if (!resAllAntrian.ok) {
-                const errorData = await resAllAntrian.json().catch(() => ({ message: 'Gagal memuat semua antrian: Respons server tidak OK.' }));
-                throw new Error(errorData.message || 'Gagal memuat semua antrian.');
-            }
-
-            this._antrian = await resUserAntrian.json();
-            this._semuaAntrian = await resAllAntrian.json();
-            this._fetchError = false; // Reset error flag jika berhasil
-        } catch (err) {
-            console.error("Error fetching antrian data:", err);
-            this._fetchError = true; // Set error flag jika ada error
-            // Logika untuk mengarahkan ulang jika token tidak valid (ini berfungsi)
-            if (err.message.includes("Authentikasi diperlukan") || err.message.includes("refresh token")) {
-                alert("Sesi Anda telah berakhir atau token tidak valid. Silakan login kembali.");
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('userRole');
-                window.location.hash = "#/login";
-            }
-        } finally {
-            this.render(); // Selalu render, baik berhasil atau gagal, untuk menampilkan UI yang sesuai
+        if (!token) {
+            this._fetchError = true;
+            this._semuaAntrian = [];
+            this._antrian = null;
+            return this.render();
         }
+
+        // Fetch semua antrian dulu
+        const resAllAntrian = await authFetch('https://backend-pusque-production.up.railway.app/antrian');
+        if (!resAllAntrian.ok) throw new Error('Gagal mengambil semua antrian.');
+        this._semuaAntrian = await resAllAntrian.json();
+
+        // Lalu coba fetch user antrian, tapi tangani jika 500
+        const resUserAntrian = await authFetch('https://backend-pusque-production.up.railway.app/antrian/user');
+        if (resUserAntrian.ok) {
+            this._antrian = await resUserAntrian.json();
+        
+            // ✅ Tampilkan alert hanya sekali
+            if (
+                this._antrian?.status === 'dalam antrian' &&
+                !localStorage.getItem('antrianSudahDiverifikasi')
+            ) {
+                alert('✅ Antrian Anda telah diverifikasi. Silakan tunggu giliran.');
+                localStorage.setItem('antrianSudahDiverifikasi', 'true');
+            }
+        } else {
+            this._antrian = null;
+        }
+
+        this._fetchError = false;
+    } catch (err) {
+        console.error("Error fetching antrian data:", err);
+        this._fetchError = true;
+        this._antrian = null;
+        this._semuaAntrian = [];
+    } finally {
+        // 🧹 Reset jika tidak dalam antrian
+        if (!this._antrian || this._antrian.status !== 'dalam antrian') {
+            localStorage.removeItem('antrianSudahDiverifikasi');
+        }
+
+        this.render();
     }
+}
 
     // Fungsi-fungsi lain (formatTimeFromMinutes, hitungEstimasi, dll.)
     // ... (tidak ada perubahan pada bagian ini karena ini adalah logika display/kalkulasi)
