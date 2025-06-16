@@ -9,7 +9,7 @@ class ProfileView extends HTMLElement {
     // Fetch data user yang sedang login
     let user = {};
     try {
-      const res = await fetch('http://localhost:5000/user/me', { credentials: 'include' });
+      const res = await fetch('https://serverpusque-production.up.railway.app/user/me', { credentials: 'include' });
       if (!res.ok) throw new Error('Gagal mengambil data user');
       user = await res.json();
     } catch (err) {
@@ -137,7 +137,7 @@ class ProfileView extends HTMLElement {
           </div>
           <div class="info-line">
             <span class="label">KTP</span>
-            <img class="ktp-img" src="${user.fotoKtp ? `http://localhost:5000/uploads/ktp/${user.fotoKtp}` : ktpimg}" alt="KTP" />
+            <img class="ktp-img" src="${user.fotoKtp ? `https://serverpusque-production.up.railway.app/uploads/ktp/${user.fotoKtp}` : ktpimg}" alt="KTP" />
           </div>
         </div>
       </div>

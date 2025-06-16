@@ -18,18 +18,19 @@ import './pages/notFound/notFoundPage.js';
 import './pages/auth/login.js';
 import './pages/pasien/feedback-page.js';
 
+import { authFetch } from "./fatchauth.js";
+
+
 function isLoggedIn() {
-  // Cek token di localStorage, sesuaikan dengan nama token yang kamu simpan setelah login
   return !!localStorage.getItem('accessToken');
 }
+
 
 function router() {
   const app = document.getElementById('app');
   const hash = window.location.hash;
-
   app.innerHTML = '';
 
-  // Jika belum login, hanya boleh akses login & register
   if (!isLoggedIn()) {
     if (hash === "#/register") {
       renderRegisterForm(() => {
@@ -37,22 +38,18 @@ function router() {
       });
       return;
     }
-    // Default: tampilkan login
     renderLoginForm(() => {
       window.location.hash = "#/";
     });
     return;
   }
 
-  // Jika sudah login, render halaman sesuai hash
   const role = localStorage.getItem("userRole");
 
   const navbar = document.querySelector('my-navbar');
   if (navbar) {
-    navbar.render(); // Pastikan navbar dirender ulang
+    navbar.render();
   }
-
-  app.innerHTML = '';
 
   if (hash === "" || hash === "#/" || hash === "#/home") {
     const home = document.createElement("pusque-page");
@@ -61,6 +58,15 @@ function router() {
 
   else if (hash === "#/antrian" && role === "pasien") {
     const antrian = document.createElement("antrian-puskesmas");
+    authFetch('https://serverpusque-production.up.railway.app/antrian')
+      .then(res => res.json())
+      .then(data => {
+        antrian.data = data;
+      })
+      .catch(err => {
+        antrian.innerHTML = `<p class="text-danger">Gagal memuat antrian</p>`;
+        console.error(err);
+      });
     app.appendChild(antrian);
   }
 
@@ -81,8 +87,7 @@ function router() {
 
   else if (hash === "#/dokter" && role === "dokter") {
     const listView = document.createElement("pasien-list-view");
-    // Fetch data dari backend
-    fetch('http://localhost:5000/antrian', { credentials: 'include' })
+    authFetch('https://serverpusque-production.up.railway.app/antrian')
       .then(res => res.json())
       .then(data => {
         listView.dataPasien = data;
@@ -96,8 +101,7 @@ function router() {
 
   else if (hash === "#/pengajuan" && role === "admin") {
     const adminList = document.createElement("admin-pengajuan-list");
-    // Fetch data dari backend
-    fetch('http://localhost:5000/antrian', { credentials: 'include' })
+    authFetch('https://serverpusque-production.up.railway.app')
       .then(res => res.json())
       .then(data => {
         adminList.dataPasien = data;
@@ -117,8 +121,7 @@ function router() {
   else if (hash.startsWith('#/detailpasien/') && role === "dokter") {
     const id = parseInt(hash.split('/')[2]);
     const detailView = document.createElement("detail-pasien-view");
-    // Fetch detail pasien dari backend
-    fetch(`http://localhost:5000/antrian/${id}`, { credentials: 'include' })
+    authFetch(`https://serverpusque-production.up.railway.app/antrian/${id}`)
       .then(res => {
         if (!res.ok) throw new Error('Pasien tidak ditemukan');
         return res.json();
@@ -153,14 +156,6 @@ function router() {
     app.appendChild(notFound);
   }
 }
-
-function logout() {
-  localStorage.removeItem('accessToken');
-  window.location.hash = "#/login";
-}
-
-
-
 
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);

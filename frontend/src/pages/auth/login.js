@@ -44,6 +44,7 @@ export function renderLoginForm(onLoginSuccess) {
   var nikInput = document.getElementById('nik');
   var passwordInput = document.getElementById('password');
   var messageDiv = document.getElementById('message');
+  
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -53,7 +54,7 @@ export function renderLoginForm(onLoginSuccess) {
     messageDiv.textContent = '';
     messageDiv.classList.remove('text-success', 'text-danger');
 
-    fetch('http://localhost:5000/login', {
+    fetch('https://serverpusque-production.up.railway.app/login', {
       method: 'POST',
       credentials: 'include',
       headers: {

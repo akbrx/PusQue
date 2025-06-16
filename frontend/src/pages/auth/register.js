@@ -81,82 +81,26 @@ export function renderRegisterForm(onRegisterSuccess) {
     const formData = new FormData();
     formData.append('image', document.getElementById('fotoKtp').files[0]);
 
-    // JIKA PAKAI OCR
-    // try {
-    //   const res = await fetch('http://localhost:5002/validate-nik', {
-    //     method: 'POST',
-    //     body: formData
-    //   });
-    //   let data;
-    //   try {
-    //     data = await res.json();
-    //   } catch (jsonErr) {
-    //     data = { message: 'Gagal membaca response dari server OCR.' };
-    //   }
-    //   if (res.ok && data.message === "NIK valid") {
-    //     // lanjutkan proses register
-    //     const registerData = new FormData();
-    //     registerData.append('name', name);
-    //     registerData.append('nik', nik);
-    //     registerData.append('tanggalLahir', tanggalLahir);
-    //     registerData.append('domisili', domisili);
-    //     registerData.append('password', password);
-    //     registerData.append('confPassword', confPassword);
-    //     registerData.append('fotoKtp', document.getElementById('fotoKtp').files[0]);
-
-    //     const registerRes = await fetch('http://localhost:5000/users', {
-    //       method: 'POST',
-    //       body: registerData
-    //     });
-    //     const registerDataResponse = await registerRes.json();
-    //     if (registerRes.ok) {
-    //       messageDiv.classList.remove('text-danger');
-    //       messageDiv.classList.add('text-success');
-    //       messageDiv.textContent = 'Register berhasil! Silakan login.';
-    //       setTimeout(() => {
-    //         if (typeof onRegisterSuccess === 'function') {
-    //           onRegisterSuccess();
-    //         } else {
-    //           window.location.hash = "#/login";
-    //         }
-    //       }, 1500);
-    //     } else {
-    //       messageDiv.classList.remove('text-success');
-    //       messageDiv.classList.add('text-danger');
-    //       messageDiv.textContent = registerDataResponse.message || 'Register gagal';
-    //     }
-    //   } else {
-    //     messageDiv.classList.remove('text-success');
-    //     messageDiv.classList.add('text-danger');
-    //     messageDiv.textContent = data.message || 'NIK tidak valid';
-    //   }
-    // } catch (err) {
-    //   messageDiv.classList.remove('text-success');
-    //   messageDiv.classList.add('text-danger');
-    //   messageDiv.textContent = 'Terjadi error koneksi ke server OCR';
-    // } finally {
-    //   loadingSpinner.style.display = 'none'; // Sembunyikan spinner
-    // }
-    // JIKA PAKAI OCR
-
     try {
       const registerData = new FormData();
-      registerData.append('name', name);
-      registerData.append('nik', nik);
-      registerData.append('tanggalLahir', tanggalLahir);
-      registerData.append('domisili', domisili);
-      registerData.append('password', password);
-      registerData.append('confPassword', confPassword);
-      registerData.append('fotoKtp', document.getElementById('fotoKtp').files[0]);
+registerData.append('nik', nik);
+registerData.append('name', name);
+registerData.append('tanggalLahir', tanggalLahir);
+registerData.append('domisili', domisili);
+registerData.append('password', password);
+registerData.append('confPassword', confPassword);
+registerData.append('fotoKtp', document.getElementById('fotoKtp').files[0]);
+
+const res = await fetch('https://serverpusque-production.up.railway.app/users', {
+  method: 'POST',
+  body: registerData
+});
+
+const registerDataResponse = await res.json(); // Gunakan objek yg benar
+console.log('Respon server:', registerDataResponse);
+
     
-      const registerRes = await fetch('http://localhost:5000/users', {
-        method: 'POST',
-        body: registerData
-      });
-    
-      const registerDataResponse = await registerRes.json();
-    
-      if (registerRes.ok) {
+      if (res.ok) {
         messageDiv.classList.remove('text-danger');
         messageDiv.classList.add('text-success');
         messageDiv.textContent = 'Register berhasil! Silakan login.';
