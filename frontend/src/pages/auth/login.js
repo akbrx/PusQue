@@ -64,50 +64,53 @@
                 body: JSON.stringify({ nik: nik, password: password })
             })
                 .then(function (res) {
-                    return res.json().then(function (data) {
-                        // --- LOGGING TAMBAHAN UNTUK DEBUGGING ---
-                        console.log("[DEBUG - LOGIN] Nilai data.accessToken dari BE:", data.accessToken);
-                        console.log("[DEBUG - LOGIN] Tipe data.accessToken:", typeof data.accessToken);
-                        // --- AKHIR LOGGING TAMBAHAN ---
-
-                        // Tambahkan pengecekan validitas token sebelum disimpan
-                        if (!data.accessToken || typeof data.accessToken !== 'string' || data.accessToken.trim() === '') {
-                            console.error("[DEBUG - LOGIN] data.accessToken tidak valid atau kosong. Tidak akan disimpan.");
-                            messageDiv.classList.add('text-danger');
-                            messageDiv.textContent = 'Token tidak valid dari server. Coba login ulang.';
-                            return; // Hentikan proses jika token tidak valid
-                        }
-
-                        if (res.ok) {
-                            localStorage.setItem('accessToken', data.accessToken);
-                            localStorage.setItem('userRole', data.role);
-
-                            console.log("[LOGIN] Login Berhasil. Token diterima:", data.accessToken);
-                            console.log("[LOGIN] Token tersimpan di localStorage:", localStorage.getItem('accessToken'));
-
-                            messageDiv.classList.add('text-success');
-                            messageDiv.textContent = 'Login berhasil!';
-                            setTimeout(function () {
-                                // Redirect sesuai role
-                                if (data.role === 'admin') {
-                                    window.location.hash = "#/beranda";
-                                } else if (data.role === 'dokter') {
-                                    window.location.hash = "#/dokter";
-                                } else {
-                                    if (typeof onLoginSuccess === 'function') {
-                                        onLoginSuccess();
-                                    } else {
-                                        window.location.hash = "#/";
-                                    }
-                                }
-                            }, 1000);
+                return res.json().then(function (data) {
+                    // --- Jika respons gagal (contoh: password salah, user tidak ditemukan) ---
+                    if (!res.ok) {
+                        console.error("[LOGIN] Login Gagal:", data);
+                        messageDiv.classList.add('text-danger');
+                        messageDiv.textContent = data.message || 'Login gagal';
+                        return;
+                    }
+            
+                    // --- LOGGING TAMBAHAN UNTUK DEBUGGING ---
+                    console.log("[DEBUG - LOGIN] Nilai data.accessToken dari BE:", data.accessToken);
+                    console.log("[DEBUG - LOGIN] Tipe data.accessToken:", typeof data.accessToken);
+                    // --- AKHIR LOGGING TAMBAHAN ---
+            
+                    // --- Validasi token ---
+                    if (!data.accessToken || typeof data.accessToken !== 'string' || data.accessToken.trim() === '') {
+                        console.error("[DEBUG - LOGIN] data.accessToken tidak valid atau kosong. Tidak akan disimpan.");
+                        messageDiv.classList.add('text-danger');
+                        messageDiv.textContent = 'Token tidak valid dari server. Coba login ulang.';
+                        return;
+                    }
+            
+                    // --- Simpan token & redirect ---
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('userRole', data.role);
+            
+                    console.log("[LOGIN] Login Berhasil. Token diterima:", data.accessToken);
+                    console.log("[LOGIN] Token tersimpan di localStorage:", localStorage.getItem('accessToken'));
+            
+                    messageDiv.classList.add('text-success');
+                    messageDiv.textContent = 'Login berhasil!';
+                    setTimeout(function () {
+                        // Redirect sesuai role
+                        if (data.role === 'admin') {
+                            window.location.hash = "#/beranda";
+                        } else if (data.role === 'dokter') {
+                            window.location.hash = "#/dokter";
                         } else {
-                            messageDiv.classList.add('text-danger');
-                            messageDiv.textContent = data.message || 'Login gagal';
-                            console.error("[LOGIN] Login Gagal:", data);
+                            if (typeof onLoginSuccess === 'function') {
+                                onLoginSuccess();
+                            } else {
+                                window.location.hash = "#/";
+                            }
                         }
-                    });
-                })
+                    }, 1000);
+                });
+            })
                 .catch(function (err) {
                     messageDiv.classList.add('text-danger');
                     messageDiv.textContent = 'Terjadi error koneksi';

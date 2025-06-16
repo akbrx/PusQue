@@ -42,8 +42,8 @@ class MyNavbar extends HTMLElement {
     
       // Jika bukan login/register, tampilkan navbar sesuai role
       let menuItems = `<li><a href="#/">Home</a></li>`;
-    
-      if (role === 'pasien') {
+
+    if (role === 'pasien') {
         menuItems += `
           <li><a href="#/antrian">Antrian</a></li>
           <li><a href="#/daftar">Daftar</a></li>
@@ -62,8 +62,8 @@ class MyNavbar extends HTMLElement {
         `;
       }
     
-      menuItems += <li><a href="#/profile">Profil</a></li>;
-      menuItems += <li><a href="#/login" id="logoutBtn">Logout</a></li>;
+      menuItems += `<li><a href="#/profile">Profil</a></li>`;
+      menuItems += `<li><a href="#/login" id="logoutBtn">Logout</a></li>`;
     
       this.shadowRoot.innerHTML = `
         <style>

@@ -12,53 +12,68 @@ class AntrianPuskesmas extends HTMLElement {
     }
 
     async connectedCallback() {
-    try {
-        const token = localStorage.getItem('accessToken');
-
-        if (!token) {
-            this._fetchError = true;
-            this._semuaAntrian = [];
-            this._antrian = null;
-            return this.render();
+          if (Notification.permission === "default") {
+            alert("Klik 'Izinkan' agar kami dapat memberi notifikasi saat antrian Anda diverifikasi.");
+            Notification.requestPermission();
         }
-
-        // Fetch semua antrian dulu
-        const resAllAntrian = await authFetch('https://backend-pusque-production.up.railway.app/antrian');
-        if (!resAllAntrian.ok) throw new Error('Gagal mengambil semua antrian.');
-        this._semuaAntrian = await resAllAntrian.json();
-
-        // Lalu coba fetch user antrian, tapi tangani jika 500
-        const resUserAntrian = await authFetch('https://backend-pusque-production.up.railway.app/antrian/user');
-        if (resUserAntrian.ok) {
-            this._antrian = await resUserAntrian.json();
+          try {
+            const token = localStorage.getItem('accessToken');
         
-            // ✅ Tampilkan alert hanya sekali
-            if (
+            if (!token) {
+              this._fetchError = true;
+              this._semuaAntrian = [];
+              this._antrian = null;
+              return this.render();
+            }
+        
+            // Fetch semua antrian
+            const resAllAntrian = await authFetch('https://backend-pusque-production.up.railway.app/antrian');
+            if (!resAllAntrian.ok) throw new Error('Gagal mengambil semua antrian.');
+            this._semuaAntrian = await resAllAntrian.json();
+        
+            // Fetch antrian user
+            const resUserAntrian = await authFetch('https://backend-pusque-production.up.railway.app/antrian/user');
+            if (resUserAntrian.ok) {
+              this._antrian = await resUserAntrian.json();
+        
+              if (
                 this._antrian?.status === 'dalam antrian' &&
                 !localStorage.getItem('antrianSudahDiverifikasi')
-            ) {
-                alert('✅ Antrian Anda telah diverifikasi. Silakan tunggu giliran.');
+              ) {
+                this.showNotifikasiVerifikasi(); // panggil fungsi notifikasi
                 localStorage.setItem('antrianSudahDiverifikasi', 'true');
+              }
+            } else {
+              this._antrian = null;
             }
-        } else {
+        
+            //  Reset jika bukan dalam antrian
+            if (!this._antrian || this._antrian.status !== 'dalam antrian') {
+              localStorage.removeItem('antrianSudahDiverifikasi');
+            }
+        
+            this._fetchError = false;
+          } catch (err) {
+            console.error("Error fetching antrian data:", err);
+            this._fetchError = true;
             this._antrian = null;
+            this._semuaAntrian = [];
+          } finally {
+            this.render();
+          }
         }
+        
+        showNotifikasiVerifikasi() {
+        const title = "✅ Antrian Diverifikasi";
+        const options = {
+            body: "Silakan tunggu giliran Anda.",
+            icon: "https://cdn-icons-png.flaticon.com/512/943/943268.png"
+        };
 
-        this._fetchError = false;
-    } catch (err) {
-        console.error("Error fetching antrian data:", err);
-        this._fetchError = true;
-        this._antrian = null;
-        this._semuaAntrian = [];
-    } finally {
-        // 🧹 Reset jika tidak dalam antrian
-        if (!this._antrian || this._antrian.status !== 'dalam antrian') {
-            localStorage.removeItem('antrianSudahDiverifikasi');
-        }
-
-        this.render();
+        if (Notification.permission === "granted") {
+            new Notification(title, options);
+        } 
     }
-}
 
     // Fungsi-fungsi lain (formatTimeFromMinutes, hitungEstimasi, dll.)
     // ... (tidak ada perubahan pada bagian ini karena ini adalah logika display/kalkulasi)

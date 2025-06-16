@@ -1,162 +1,178 @@
 // profile.js
-import ktpimg from "../assets/images/ktp.jpg"
+import ktpimg from "../assets/images/ktp.jpg";
 import { authFetch } from "../fatchauth.js";
 
 class ProfileView extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+
+        // Fungsi untuk memformat tanggal ke format Indonesia
+        this.formatTanggal = (dateString) => {
+            // Jika tidak ada tanggal, kembalikan strip
+            if (!dateString) return '-';
+            
+            try {
+                const date = new Date(dateString);
+                // Cek jika tanggal tidak valid setelah parsing
+                if (isNaN(date.getTime())) {
+                    return dateString; // Kembalikan string asli jika formatnya tidak dikenali
+                }
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('id-ID', options);
+            } catch (e) {
+                // Jika terjadi error saat parsing, kembalikan string aslinya
+                return dateString;
+            }
+        };
     }
 
     async connectedCallback() {
-        // Fetch data user yang sedang login
         let user = {};
         try {
-            // Ganti fetch native dengan authFetch
-            // PERBAIKI URL ENDPOINT DI SINI!
             const res = await authFetch('https://backend-pusque-production.up.railway.app/user/me');
             
-            // Periksa apakah respons OK sebelum mencoba parsing JSON
             if (!res.ok) {
                 const errorData = await res.json().catch(() => ({ message: 'Respons non-JSON atau kosong.' }));
                 throw new Error(errorData.message || `Gagal mengambil data user: ${res.status} ${res.statusText}`);
             }
             
             user = await res.json();
-            console.log("[PROFILE_VIEW] Data user berhasil diambil:", user); // Log untuk debugging
         } catch (err) {
-            user = { name: '-', nik: '-', tanggalLahir: '-', domisili: '-', fotoKtp: '' };
+            user = { name: 'Gagal memuat data', nik: '-', tanggalLahir: '-', domisili: '-', fotoKtp: '' };
             console.error("[PROFILE_VIEW] Error mengambil data user:", err);
-            // Tambahkan logika untuk mengarahkan ulang jika token tidak valid
+
             if (err.message.includes("Authentikasi diperlukan") || err.message.includes("refresh token")) {
                 alert("Sesi Anda telah berakhir atau token tidak valid. Silakan login kembali.");
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('userRole');
-                window.location.hash = "#/login"; // Arahkan ke halaman login
+                window.location.hash = "#/login";
             }
         }
 
+        this.render(user);
+    }
+
+    render(user) {
         this.shadowRoot.innerHTML = `
             <style>
+                /* Import Font */
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+                /* CSS Variables untuk tema */
                 :host {
                     display: flex;
                     justify-content: center;
-                    align-items: center;
+                    padding: 2rem 1rem;
+                    --primary-color: #3B82F6;
+                    --text-color-dark: #1F2937;
+                    --text-color-light: #6B7280;
+                    --border-color: #E5E7EB;
+                    --background-color: #ffffff;
+                    --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+                    --font-family: 'Poppins', sans-serif;
                 }
-                .card-profile {
-                    background: white;
-                    border-radius: 10px;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    padding: 2rem;
-                    max-width: 900px;
+
+                .profile-card {
+                    background: var(--background-color);
+                    border-radius: 16px;
+                    box-shadow: var(--shadow);
+                    max-width: 600px;
                     width: 100%;
-                    display: flex;
-                    gap: 1.5rem;
-                    margin-top: 40px;
+                    font-family: var(--font-family);
+                    overflow: hidden; /* Agar border-radius bekerja dengan baik */
                 }
-                .left-profile {
+
+                .profile-header {
+                    background-color: var(--primary-color);
+                    color: white;
+                    padding: 2rem;
+                    text-align: center;
+                }
+
+                .profile-header h2 {
+                    margin: 0;
+                    font-size: 1.75rem;
+                    font-weight: 600;
+                }
+
+                .profile-header p {
+                    margin: 0.25rem 0 0;
+                    font-size: 1rem;
+                    opacity: 0.9;
+                }
+
+                .profile-body {
+                    padding: 2rem;
                     display: flex;
                     flex-direction: column;
-                    align-items: center;
+                    gap: 1.5rem; /* Jarak antar item informasi */
                 }
-                .left-profile img.profile {
-                    width: 120px;
-                    height: 120px;
-                    border-radius: 10px;
-                    background: #e0e0e0;
-                }
-                .edit-btn {
-                    margin-top: 1rem;
-                    padding: 5px 20px;
-                    background: #2979ff;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-                .right-profile {
-                    flex: 1;
-                    padding: 30px;
-                }
-                .right-profile .nama {
-                    font-weight: bold;
-                    font-size: 1.2rem;
-                }
-                .right-profile .label {
-                    font-weight: 500;
-                }
-                .info-line {
-                    margin: 0.5rem 0;
-                    display: flex;
-                    justify-content: space-between; /* Perbaikan typo: space-beetwen menjadi space-between */
-                    align-items: flex-start;
-                    gap: 0.5rem;
-                }
-                .info-line span {
-                    display: inline-block;
-                    width: 50%;
-                    flex-shrink: 0;
-                }
-                .info-line p {
-                    display: inline-block;
-                    flex-shrink: 0;
-                    margin: 0;
-                }
-                hr {
-                    border: none;
-                    border-top: 1px solid #ddd;
-                    margin: 1rem 0;
-                }
-                .ktp-img {
-                    width: 50%;
-                    border-radius: 6px;
-                }
-                @media (max-width: 500px) {
-                    .card-profile {
-                        flex-direction: column;
-                        box-shadow: none;
 
-                    }
-                    .info-line {
-                        display: flex;
-                        justify-content: space-between; /* Perbaikan typo: space-beetwen menjadi space-between */
-                    }
-                    
-                    .info-line span.label {
-                        width : 40%
-                    }
-                    .info-line p {
-                        min-width: 120px;
-                    }
+                .info-item {
+                    display: flex;
+                    flex-direction: column;
                 }
                 
+                .info-item .label {
+                    color: var(--text-color-light);
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    margin-bottom: 0.25rem;
+                }
+
+                .info-item .value {
+                    color: var(--text-color-dark);
+                    font-size: 1.1rem;
+                    font-weight: 500;
+                    word-wrap: break-word; /* Agar teks panjang tidak keluar dari card */
+                }
+
+                .divider {
+                    border: none;
+                    border-top: 1px solid var(--border-color);
+                }
+
+                .ktp-section .label {
+                     margin-bottom: 0.75rem;
+                }
+
+                .ktp-image {
+                    width: 100%;
+                    max-width: 350px; /* Batasi lebar maksimum KTP */
+                    border-radius: 8px;
+                    border: 1px solid var(--border-color);
+                    display: block; /* Agar margin auto bekerja jika diperlukan */
+                }
+
             </style>
-            <div class="card-profile">
-                <div class="left-profile">
-                    <img class="profile" src="https://img.icons8.com/ios-filled/100/user.png" alt="profile" />
-                    <button class="edit-btn">Edit</button>
+            
+            <div class="profile-card">
+                <div class="profile-header">
+                    <h2>${user.name || 'Nama Tidak Ditemukan'}</h2>
+                    <p>Kartu Tanda Penduduk (KTP)</p>
                 </div>
-                <div class="right-profile">
-                    <div class="info-line-nama">
-                        <span class="label">Nama :</span> 
-                        <h3 class="nama">${user.name || '-'}</h3>
+                <div class="profile-body">
+                    <div class="info-item">
+                        <span class="label">Nomor Induk Kependudukan (NIK)</span>
+                        <p class="value">${user.nik || '-'}</p>
                     </div>
-                    <hr />
-                    <div class="info-line">
-                        <span class="label">NIK </span> 
-                        <p>: ${user.nik || '-'}</p>
+
+                    <div class="info-item">
+                        <span class="label">Tanggal Lahir</span>
+                        <p class="value">${this.formatTanggal(user.tanggalLahir)}</p>
                     </div>
-                    <div class="info-line">
-                        <span class="label">Tanggal Lahir </span> 
-                        <p>: ${user.tanggalLahir || '-'}</p>
+
+                    <div class="info-item">
+                        <span class="label">Domisili</span>
+                        <p class="value">${user.domisili || '-'}</p>
                     </div>
-                    <div class="info-line">
-                        <span class="label">Domisili</span> 
-                        <p>: ${user.domisili || '-'}</p>
-                    </div>
-                    <div class="info-line">
-                        <span class="label">KTP</span>
-                        <img class="ktp-img" src="${user.fotoKtp ? `https://backend-pusque-production.up.railway.app/uploads/ktp/${user.fotoKtp}` : ktpimg}" alt="KTP" /> <!-- Perbaiki URL backend untuk uploads -->
+
+                    <hr class="divider">
+                    
+                    <div class="info-item ktp-section">
+                        <span class="label">Foto KTP</span>
+                        <img class="ktp-image" src="${user.fotoKtp ? `https://backend-pusque-production.up.railway.app/uploads/ktp/${user.fotoKtp}` : ktpimg}" alt="Foto KTP" />
                     </div>
                 </div>
             </div>
