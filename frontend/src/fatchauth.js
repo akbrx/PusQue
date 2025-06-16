@@ -11,81 +11,91 @@
  * @throws {Error} Jika token tidak ada, tidak dapat di-refresh, atau ada masalah jaringan/server.
  */
 export async function authFetch(url, options = {}) {
-    // 1. Ambil Access Token dari localStorage di awal fungsi.
-    // Ini adalah langkah KRITIS untuk memastikan 'accessToken' terdefinisi.
     let accessToken = localStorage.getItem('accessToken');
+    
+    // --- LOGGING TAMBAHAN UNTUK DEBUGGING ---
+    console.log(`[AUTH_FETCH] Memanggil authFetch untuk URL: ${url}`);
+    console.log(`[AUTH_FETCH] Token dari localStorage: ${accessToken ? 'Ada' : 'Tidak Ada'}`);
+    if (accessToken) {
+        console.log(`[AUTH_FETCH] Tipe accessToken: ${typeof accessToken}`);
+        // Gunakan Math.min untuk mencegah error jika string token lebih pendek dari 30 karakter
+        console.log(`[AUTH_FETCH] Token (sebagian): ${accessToken.substring(0, Math.min(accessToken.length, 30))}...`);
+    }
+    // --- AKHIR LOGGING TAMBAHAN ---
 
-    // 2. Jika tidak ada Access Token, segera lempar error.
-    // Pengguna harus login terlebih dahulu.
-    if (!accessToken) {
-        console.error("Error (authFetch): Access Token tidak ditemukan di localStorage. Pengguna mungkin belum login.");
+    // Tambahkan kondisi untuk memeriksa jika accessToken adalah string "undefined", "null", atau string kosong
+    // Ini menangani kasus di mana string "undefined" atau "null" disimpan di localStorage
+    if (!accessToken || accessToken === 'undefined' || accessToken === 'null' || accessToken.trim() === '') {
+        console.error("Error (authFetch): Access Token tidak ditemukan atau tidak valid di localStorage. Pengguna mungkin belum login.");
         throw new Error("Authentikasi diperlukan. Silakan login kembali.");
     }
 
-    // 3. Siapkan header untuk request awal dengan token yang ada.
     const initialHeaders = {
-        ...options.headers, // Pertahankan header yang mungkin sudah ada
+        ...options.headers,
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
     };
 
-    // Tambahkan credentials 'include' untuk memastikan cookie (refreshToken) dikirim.
     const fetchOptions = {
         ...options,
         headers: initialHeaders,
         credentials: 'include'
     };
 
+    // --- LOGGING TAMBAHAN UNTUK DEBUGGING ---
+    console.log(`[AUTH_FETCH] Header Authorization yang dikirim: ${fetchOptions.headers.Authorization}`);
+    // --- AKHIR LOGGING TAMBAHAN ---
+
     let response = await fetch(url, fetchOptions);
 
-    // 4. Periksa jika Access Token kadaluarsa (respons 401 Unauthorized)
     if (response.status === 401) {
-        console.warn("Access Token kadaluarsa atau tidak valid. Mencoba me-refresh token...");
+        console.warn("[AUTH_FETCH] Access Token kadaluarsa atau tidak valid. Mencoba me-refresh token...");
 
         try {
-            // Minta token baru dari backend melalui endpoint refresh token
-            const tokenRes = await fetch('https://serverpusque-production.up.railway.app/token', {
-                method: 'GET', // Asumsi endpoint refresh token menggunakan GET
-                credentials: 'include' // Penting untuk mengirim cookie refreshToken
+            // URL ini sudah menggunakan URL deploy Anda yang benar
+            const tokenRes = await fetch('https://backend-pusque-production.up.railway.app/token', {
+                method: 'GET',
+                credentials: 'include'
             });
 
             if (tokenRes.ok) {
                 const tokenData = await tokenRes.json();
                 const newAccessToken = tokenData.accessToken;
 
-                if (!newAccessToken) {
-                    throw new Error('Refresh token berhasil, tetapi accessToken baru tidak ditemukan.');
+                // --- LOGGING TAMBAHAN UNTUK DEBUGGING ---
+                console.log("[AUTH_FETCH] Refresh token berhasil. Token baru diterima:", newAccessToken ? 'Ada' : 'Tidak Ada');
+                if (newAccessToken) {
+                    console.log(`[AUTH_FETCH] Tipe newAccessToken: ${typeof newAccessToken}`);
+                    console.log(`[AUTH_FETCH] Token baru (sebagian): ${newAccessToken.substring(0, Math.min(newAccessToken.length, 30))}...`);
+                }
+                // --- AKHIR LOGGING TAMBAHAN ---
+
+                // Pastikan newAccessToken adalah string yang valid, bukan "undefined", "null", atau kosong
+                if (!newAccessToken || newAccessToken === 'undefined' || newAccessToken === 'null' || newAccessToken.trim() === '') {
+                    throw new Error('Refresh token berhasil, tetapi accessToken baru tidak valid atau kosong.');
                 }
 
-                // Simpan Access Token baru ke localStorage
                 localStorage.setItem('accessToken', newAccessToken);
-                accessToken = newAccessToken; // Perbarui variabel accessToken
+                accessToken = newAccessToken;
 
-                // Opsional: Jika backend juga mengirim role di respons refresh token, simpan juga
-                // Misalnya: if (tokenData.role) localStorage.setItem('userRole', tokenData.role);
+                console.log("[AUTH_FETCH] Access Token berhasil di-refresh. Mengulang request asli...");
 
-                console.log("Access Token berhasil di-refresh. Mengulang request asli...");
-
-                // Ulangi request asli dengan Access Token yang baru
-                fetchOptions.headers['Authorization'] = `Bearer ${accessToken}`; // Perbarui header
-                response = await fetch(url, fetchOptions); // Ulangi fetch
+                fetchOptions.headers['Authorization'] = `Bearer ${accessToken}`;
+                response = await fetch(url, fetchOptions);
             } else {
-                // Jika refresh token gagal (misalnya 403 Forbidden dari backend)
                 const errorData = await tokenRes.json().catch(() => ({ message: 'Tidak dapat refresh token.' }));
-                console.error("Gagal me-refresh token:", errorData);
-                // Penting: Buang token yang usang dan lempar error
+                console.error("[AUTH_FETCH] Gagal me-refresh token:", errorData);
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('userRole');
                 throw new Error(errorData.message || 'Tidak dapat me-refresh token. Silakan login kembali.');
             }
         } catch (refreshError) {
-            console.error("Error selama proses refresh token:", refreshError);
+            console.error("[AUTH_FETCH] Error selama proses refresh token:", refreshError);
             localStorage.removeItem('accessToken');
             localStorage.removeItem('userRole');
             throw new Error(refreshError.message || 'Terjadi masalah saat me-refresh token. Silakan login kembali.');
         }
     }
 
-    // Mengembalikan respons dari request awal atau request yang diulang
     return response;
 }

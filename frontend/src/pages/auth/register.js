@@ -91,7 +91,7 @@ registerData.append('password', password);
 registerData.append('confPassword', confPassword);
 registerData.append('fotoKtp', document.getElementById('fotoKtp').files[0]);
 
-const res = await fetch('https://serverpusque-production.up.railway.app/users', {
+const res = await fetch('https://backend-pusque-production.up.railway.app/users', {
   method: 'POST',
   body: registerData
 });
