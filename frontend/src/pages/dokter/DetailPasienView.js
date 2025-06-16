@@ -1,4 +1,6 @@
 import ktpimg from "../../assets/images/ktp.jpg"
+import { authFetch } from "../../fatchauth.js"; // Import authFetch
+
 class DetailPasienView extends HTMLElement {
     set pasien(data) {
       // Mapping data dari backend ke frontend
@@ -22,6 +24,10 @@ class DetailPasienView extends HTMLElement {
         this.innerHTML = `<p class="text-danger">Data pasien tidak ditemukan.</p>`;
         return;
       }
+
+      const fotoKtpSrc = this._pasien.fotoKtp
+        ? `https://backend-pusque-production.up.railway.app/uploads/ktp/${this._pasien.fotoKtp}`
+        : ktpimg;
 
       this.innerHTML = `
         <section class="container py-5">
@@ -99,41 +105,55 @@ class DetailPasienView extends HTMLElement {
 
       // Event listener tombol turunkan
       this.querySelector('#btn-turunkan')?.addEventListener('click', async () => {
-        if (!confirm('Yakin ingin menurunkan antrian pasien ini satu tingkat ke bawah?')) return;
+        if (!confirm('Yakin ingin menurunkan antrian pasien ini satu tingkat ke bawah?')) return; // Ganti dengan custom modal
         try {
-          const res = await fetch(`https://serverpusque-production.up.railway.app/antrian/${this._pasien.id}/mundur`, {
+          // Gunakan authFetch dan URL backend yang benar
+          const res = await authFetch(`https://backend-pusque-production.up.railway.app/antrian/${this._pasien.id}/mundur`, {
             method: 'PATCH',
-            credentials: 'include'
           });
           if (res.ok) {
-            alert('Antrian berhasil diturunkan.');
+            alert('Antrian berhasil diturunkan.'); // Ganti dengan custom modal
             window.location.hash = '#/dokter';
           } else {
-            const data = await res.json().catch(() => ({}));
-            alert(data.message || 'Gagal menurunkan antrian.');
+            const data = await res.json().catch(() => ({ message: 'Respons non-JSON atau kosong.' }));
+            alert(data.message || 'Gagal menurunkan antrian.'); // Ganti dengan custom modal
           }
         } catch (err) {
-          alert('Terjadi error saat menurunkan antrian.');
+          console.error("Error saat menurunkan antrian:", err);
+          alert('Terjadi error saat menurunkan antrian.'); // Ganti dengan custom modal
+          // Redirect ke login jika error otentikasi
+          if (err.message.includes("Authentikasi diperlukan") || err.message.includes("refresh token")) {
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('userRole');
+              window.location.hash = "#/login";
+          }
         }
       });
 
       this.querySelector('a.btn.btn-primary')?.addEventListener('click', async (e) => {
         e.preventDefault();
-        if (!confirm('Tandai antrian ini sebagai selesai?')) return;
+        if (!confirm('Tandai antrian ini sebagai selesai?')) return; // Ganti dengan custom modal
         try {
-          const res = await fetch(`https://serverpusque-production.up.railway.app/antrian/${this._pasien.id}/selesai`, {
+          // Gunakan authFetch dan URL backend yang benar
+          const res = await authFetch(`https://backend-pusque-production.up.railway.app/antrian/${this._pasien.id}/selesai`, {
             method: 'PATCH',
-            credentials: 'include'
           });
           if (res.ok) {
-            alert('Antrian berhasil diselesaikan.');
+            alert('Antrian berhasil diselesaikan.'); // Ganti dengan custom modal
             window.location.hash = '#/dokter';
           } else {
-            const data = await res.json().catch(() => ({}));
-            alert(data.message || 'Gagal menyelesaikan antrian.');
+            const data = await res.json().catch(() => ({ message: 'Respons non-JSON atau kosong.' }));
+            alert(data.message || 'Gagal menyelesaikan antrian.'); // Ganti dengan custom modal
           }
         } catch (err) {
-          alert('Terjadi error saat menyelesaikan antrian.');
+          console.error("Error saat menyelesaikan antrian:", err);
+          alert('Terjadi error saat menyelesaikan antrian.'); // Ganti dengan custom modal
+          // Redirect ke login jika error otentikasi
+          if (err.message.includes("Authentikasi diperlukan") || err.message.includes("refresh token")) {
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('userRole');
+              window.location.hash = "#/login";
+          }
         }
       });
     }

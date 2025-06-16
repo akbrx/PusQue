@@ -1,6 +1,6 @@
 // profile.js
 import ktpimg from "../assets/images/ktp.jpg"
-import { authFetch } from "../fatchauth.js"; // IMPORT authFetch
+import { authFetch } from "../fatchauth.js";
 
 class ProfileView extends HTMLElement {
     constructor() {
