@@ -53,12 +53,10 @@ class MyNavbar extends HTMLElement {
         menuItems += `
           <li><a href="#/beranda">Beranda</a></li>
           <li><a href="#/pengajuan">Pengajuan</a></li>
-          <li><a href="#/feedback">Feedback</a></li>
         `;
       } else if (role === 'dokter') {
         menuItems += `
           <li><a href="#/dokter">Daftar Pasien</a></li>
-          <li><a href="#/feedback">Feedback</a></li>
         `;
       }
     
