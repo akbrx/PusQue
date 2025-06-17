@@ -181,8 +181,9 @@ class AdminDetailPengajuan extends HTMLElement {
                 console.log("Estimasi Durasi (menit):", prediction.durationMinutes);
         
                 // Simpan ke variabel global (opsional)
-                this.predictedEntry = prediction.entryMinutes;
+                
                 this.predictedDuration = prediction.durationMinutes;
+                this.predictedEntry = prediction.entryMinutes;
         
                 // PATCH hasil prediksi ke backend (gunakan authFetch dan URL backend yang benar)
                 await authFetch(`https://backend-pusque-production.up.railway.app/antrian/${id}/prediksi`, {
@@ -265,8 +266,8 @@ class AdminDetailPengajuan extends HTMLElement {
             const inputDuration = {
                 input: {
                     FacilityOccupancyRate: 0.63,
-                    ProvidersOnShift: 4,
-                    NursesOnShift: 15,
+                    ProvidersOnShift: 5.0,
+                    NursesOnShift: 9.0,
                     StaffToPatientRatio: 0.3,
                     IsRegistered: 0.0,
                     IsOnlineBooking: 1.0,
